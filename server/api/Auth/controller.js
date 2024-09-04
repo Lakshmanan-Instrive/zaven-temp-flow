@@ -88,6 +88,7 @@ const login = async (params) => {
         surName: userData.surName,
         _id: userData._id,
         roleId,
+        canInvite: userData.canInvite || false,
       },
       expiresIn: 1,
     });
@@ -115,6 +116,7 @@ const invite = async (params) => {
     surName,
     accessCode,
     role,
+    canInvite: true,
   });
 
   if (userCreated) {

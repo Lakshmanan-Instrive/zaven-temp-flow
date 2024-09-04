@@ -40,7 +40,7 @@ router.get(
 
 router.post(
   "/invite",
-  checkJwtExpiry(["CP"]),
+  checkJwtExpiry(["CP"], (canInvite = true)),
   celebrate(schema.invite, schema.options),
   c(controller.invite, (req, res, next) => [req.body, req.user])
 );

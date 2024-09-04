@@ -29,5 +29,6 @@ module.exports.invite = {
     firstName: joi.string().required(),
     surName: joi.string().required(),
     email: joi.string().email().required(),
+    canInvite: joi.boolean().required(),
   }),
 };

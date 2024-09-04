@@ -5,7 +5,7 @@ const { dbConn } = require("../../system/db/mongo");
 const userSchema = new Schema(
   {
     status: {
-      type: Number, // 0 = inactive, 1 = approved,  2 = rejected, 
+      type: Number, // 0 = inactive, 1 = approved,  2 = rejected,
       default: 0,
       required: true,
     },
@@ -39,6 +39,10 @@ const userSchema = new Schema(
     legalServiceId: {
       type: Schema.Types.ObjectId,
       ref: "legalServices",
+    },
+    canInvite: {
+      type: Boolean,
+      default: false,
     },
   },
   {

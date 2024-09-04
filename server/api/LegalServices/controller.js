@@ -152,7 +152,7 @@ const getUserList = async (params, user) => {
 
 const invite = async (params, user) => {
   console.log(params);
-  const { email, firstName, surName } = params;
+  const { email, firstName, surName, canInvite } = params;
   const role = "LS";
   const accessCode = generateUniqueId();
 
@@ -164,6 +164,7 @@ const invite = async (params, user) => {
     role,
     ...user.roleId,
     status: 1,
+    canInvite,
   });
 
   if (userCreated.status === 1) {

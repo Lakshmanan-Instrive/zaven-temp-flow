@@ -18,6 +18,7 @@ const createCorporate = async (params) => {
     surName,
     role: "CP",
     status: 0,
+    canInvite: true,
   });
   if (!createUser) {
     throw boom.badRequest();
@@ -150,7 +151,7 @@ const getUserList = async (params, user) => {
 
 const invite = async (params, user) => {
   console.log(params);
-  const { email, firstName, surName } = params;
+  const { email, firstName, surName, canInvite } = params;
   const role = "CP";
   const accessCode = generateUniqueId();
 
@@ -162,6 +163,7 @@ const invite = async (params, user) => {
     role,
     ...user.roleId,
     status: 1,
+    canInvite,
   });
 
   if (userCreated.status === 1) {
