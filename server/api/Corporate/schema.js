@@ -24,3 +24,10 @@ module.exports.updateStatus = {
     status: joi.number().required(),
   }),
 };
+module.exports.invite = {
+  body: joi.object().keys({
+    firstName: joi.string().required(),
+    surName: joi.string().required(),
+    email: joi.string().email().required(),
+  }),
+};

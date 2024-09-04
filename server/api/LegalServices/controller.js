@@ -1,11 +1,14 @@
+const boom = require("@hapi/boom");
 const service = require("./service");
 const AuthService = require("../Auth/service");
 const UserService = require("../User/service");
-const boom = require("@hapi/boom");
 const { ObjectId } = require("mongoose").Types;
 const sendEmail = require("../../system/utils/send_email");
 const {
   createPasswordChangeToken,
+} = require("../../system/utils/access_code_password_change");
+const {
+  generateUniqueId,
 } = require("../../system/utils/access_code_password_change");
 
 const create = async (params) => {
@@ -57,20 +60,20 @@ const updateStatus = async (id, params) => {
     throw boom.conflict("Legal Service Already in the Same Status");
   }
   if (result._id) {
-    let updateUser = await AuthService.statusUpdate(
+    const updateUser = await AuthService.statusUpdate(
       result._id,
       { status: params.status },
       "LS"
     );
 
     if (updateUser.status === 1) {
-      let { accessCode, email, firstName, surName } = updateUser;
+      const { accessCode, email, firstName, surName } = updateUser;
       const setPasswordLink = await createPasswordChangeToken(
         email,
         accessCode
       );
       await sendEmail({
-        email: email,
+        email,
         subject: "Password Change Request",
         message: `Hi ${firstName} ${surName},<br><br>
           You have requested for a set password. Please click the link below to change your password.<br><br>
@@ -147,10 +150,44 @@ const getUserList = async (params, user) => {
   return result;
 };
 
+const invite = async (params, user) => {
+  console.log(params);
+  const { email, firstName, surName } = params;
+  const role = "LS";
+  const accessCode = generateUniqueId();
+
+  const userCreated = await AuthService.create({
+    email,
+    firstName,
+    surName,
+    accessCode,
+    role,
+    ...user.roleId,
+    status: 1,
+  });
+
+  if (userCreated.status === 1) {
+    const { accessCode, email, firstName, surName } = userCreated;
+    const setPasswordLink = await createPasswordChangeToken(email, accessCode);
+    await sendEmail({
+      email,
+      subject: "Password Change Request",
+      message: `Hi ${firstName} ${surName},<br><br>
+          You have requested for a set password. Please click the link below to change your password.<br><br>
+          ${setPasswordLink}`,
+    });
+  }
+  const result = {
+    message: "Legal Service invited successfully",
+  };
+  return result;
+};
+
 module.exports = {
   create,
   list,
   updateStatus,
   getProfile,
   getUserList,
+  invite,
 };

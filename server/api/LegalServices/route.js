@@ -36,6 +36,13 @@ router.get(
   "/user-list",
   checkJwtExpiry(["LS"]),
   c(controller.getUserList, (req, res, next) => [req.query, req.user])
-)
+);
+
+router.post(
+  "/invite",
+  checkJwtExpiry(["LS"]),
+  celebrate(schema.invite, schema.options),
+  c(controller.invite, (req, res, next) => [req.body, req.user])
+);
 
 module.exports = router;

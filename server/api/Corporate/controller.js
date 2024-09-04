@@ -148,10 +148,44 @@ const getUserList = async (params, user) => {
   return result;
 };
 
+const invite = async (params, user) => {
+  console.log(params);
+  const { email, firstName, surName } = params;
+  const role = "CP";
+  const accessCode = generateUniqueId();
+
+  const userCreated = await AuthService.create({
+    email,
+    firstName,
+    surName,
+    accessCode,
+    role,
+    ...user.roleId,
+    status: 1,
+  });
+
+  if (userCreated.status === 1) {
+    const { accessCode, email, firstName, surName } = userCreated;
+    const setPasswordLink = await createPasswordChangeToken(email, accessCode);
+    await sendEmail({
+      email,
+      subject: "Password Change Request",
+      message: `Hi ${firstName} ${surName},<br><br>
+          You have requested for a set password. Please click the link below to change your password.<br><br>
+          ${setPasswordLink}`,
+    });
+  }
+  const result = {
+    message: "Corporate invited successfully",
+  };
+  return result;
+};
+
 module.exports = {
   createCorporate,
   list,
   updateStatus,
   getProfile,
   getUserList,
+  invite,
 };

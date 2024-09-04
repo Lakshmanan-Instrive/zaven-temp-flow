@@ -3,6 +3,8 @@ import CorporateHome from "../pages/Corporate/CorporateHome";
 import LegalServiceHome from "../pages/LegalServices/LegalServiceHome";
 import AdminCorporate from "../pages/Admin/AdminCorporate";
 import AdminLegalServices from "../pages/Admin/AdminLegalServices";
+import LegalServiceUserList from "../pages/LegalServices/LegalServiceUserList";
+import CorporateUserList from "../pages/Corporate/CorporateUserList";
 
 export const menuConfig = {
   ADMIN: [
@@ -16,10 +18,17 @@ export const menuConfig = {
   CP: [
     { link: "/", element: <CorporateHome />, text: "Profile" },
     {
-      link: "/legal-services",
-      element: <LegalServiceHome />,
-      text: "Legal Services",
+      link: "/user-list",
+      element: <CorporateUserList />,
+      text: "User List",
     },
   ],
-  LS: [{ link: "/", element: <LegalServiceHome />, text: "Legal Services" }],
+  LS: [
+    { link: "/", element: <LegalServiceHome />, text: "Profile" },
+    {
+      link: "/user-list",
+      element: <LegalServiceUserList />,
+      text: "User List",
+    },
+  ],
 };

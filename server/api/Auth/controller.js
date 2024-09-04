@@ -1,16 +1,21 @@
+const boom = require("@hapi/boom");
+const jwt = require("jsonwebtoken");
 const service = require("./service");
 const { createBlockList } = require("../BlockList/service");
-const uuid = require("uuid");
-const boom = require("@hapi/boom");
-const moment = require("moment");
 const sendEmail = require("../../system/utils/send_email");
-const { encrypt, decrypt } = require("../../system/utils/crypto");
-const jwt = require("jsonwebtoken");
+const { decrypt } = require("../../system/utils/crypto");
 const {
-  createPasswordChangeToken,
   generateAccessToken,
   generateUniqueId,
 } = require("../../system/utils/access_code_password_change");
+
+const getTokenExpiryTime = async (token) => {
+  const decodedToken = jwt.decode(token);
+  if (!decodedToken || !decodedToken.exp) {
+    throw new Error("Invalid token");
+  }
+  return new Date(decodedToken.exp * 1000); // Convert Unix timestamp to JavaScript Date
+};
 
 const verifyAccessToken = async (params) => {
   const result = {};
@@ -67,6 +72,14 @@ const login = async (params) => {
   const { email, password } = params;
   const userData = await service.login({ email, password });
   if (userData) {
+    let roleId = {};
+    if (userData.role == "CP") {
+      roleId.corporateId = userData.corporateId;
+    } else if (userData.role == "LS") {
+      roleId.legalServiceId = userData.legalServiceId;
+    } else {
+      roleId.admin = null;
+    }
     const accessToken = await generateAccessToken({
       data: {
         email: userData.email,
@@ -74,6 +87,7 @@ const login = async (params) => {
         firstName: userData.firstName,
         surName: userData.surName,
         _id: userData._id,
+        roleId,
       },
       expiresIn: 1,
     });
@@ -105,7 +119,7 @@ const invite = async (params) => {
 
   if (userCreated) {
     await sendEmail({
-      email: email,
+      email,
       subject: "Legal Services Invitation",
       message: `Hi ${firstName} ${surName},<br><br>
       You have been invited to join Zaven Legal Services. Please use the below access code to login.<br><br> ${accessCode}`,
@@ -119,7 +133,7 @@ const invite = async (params) => {
 };
 
 const logout = async (params) => {
-  let result = {};
+  const result = {};
   const { token } = params;
   const expiresAt = await getTokenExpiryTime(token);
   // const expiresAt = new Date(Date.now() + 60000); // 1 minute from now
@@ -139,12 +153,4 @@ module.exports = {
   login,
   invite,
   logout,
-};
-
-const getTokenExpiryTime = async (token) => {
-  const decodedToken = jwt.decode(token);
-  if (!decodedToken || !decodedToken.exp) {
-    throw new Error("Invalid token");
-  }
-  return new Date(decodedToken.exp * 1000); // Convert Unix timestamp to JavaScript Date
 };
