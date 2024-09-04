@@ -1,59 +1,42 @@
-import React, { useState } from "react";
-import {
-  Box,
-  Button,
-  Container,
-  Divider,
-  Drawer,
-  IconButton,
-  List,
-  ListItem,
-  ListItemText,
-  Typography,
-} from "@mui/material";
-import CorporateList from "../../components/Admin/CorporateList";
+import { useEffect, useState } from "react";
+import ProfileComponent from "../../reusable/ProfileComponent";
 
-const CorporateHome = () => {
+const LegalServiceHome = () => {
   const token = localStorage.getItem("token");
-  const [tab, setTab] = useState(0);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const handleDrawerOpen = () => {
-    setIsDrawerOpen(true);
-  };
+  const [profile, setProfile] = useState();
 
-  const handleDrawerClose = () => {
-    setIsDrawerOpen(false);
-  };
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_ENDPOINT}/corporate/profile`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const data = await response.json();
+      console.log(data);
+      if (data.error) {
+        alert(data.error);
+        if (data.error === "Unauthorized") {
+          localStorage.clear();
+          window.location.href = "/login";
+        }
+      } else {
+        console.log(data.detail, "data");
+        setProfile(data.detail[0]);
+      }
+    };
+    fetchProfileData();
 
-  return (
-    <>
-      <Container maxWidth="xl" sx={{ padding: "20px", mt: "50px" }}>
-        <Box sx={{ mb: 5 }}>
-          <Typography variant="h4" align="center" gutterBottom>
-            Welcome to Zaven
-          </Typography>
-          <Drawer anchor="left" open={isDrawerOpen} onClose={handleDrawerClose}>
-            <Typography variant="h6" sx={{ my: 2, textAlign: "center" }}>
-              Zaven
-            </Typography>
-            <Divider />
-            <List>
-              <ListItem
-                button
-                onClick={() => {
-                  setTab(0);
-                  handleDrawerClose();
-                }}
-              >
-                <ListItemText primary="Corporate" />
-              </ListItem>
-            </List>
-          </Drawer>
-          {tab === 0 && <CorporateList role={true} />}
-        </Box>
-      </Container>
-    </>
-  );
+    // setFirstName(response.firstName);
+    // setSurName(response.surName);
+  }, []);
+
+  return <>{profile && <ProfileComponent profile={profile} />}</>;
 };
 
-export default CorporateHome;
+export default LegalServiceHome;
