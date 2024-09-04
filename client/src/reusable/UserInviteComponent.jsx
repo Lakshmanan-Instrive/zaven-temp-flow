@@ -1,4 +1,12 @@
-import { Box, Button, Modal, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Checkbox,
+  FormControlLabel,
+  Modal,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import React from "react";
@@ -23,12 +31,16 @@ const formStructure = {
     label: "Surname",
     required: true,
   },
+  canInvite: {
+    type: "checkbox",
+    label: "Can Invite",
+    required: false,
+  },
 };
 
 const UserInviteComponent = ({ inviteModel, handleInviteClose, onSubmit }) => {
   const initialValues = {};
   const validationSchema = {};
-
   Object.keys(formStructure).forEach((key) => {
     initialValues[key] = "";
 
@@ -64,6 +76,10 @@ const UserInviteComponent = ({ inviteModel, handleInviteClose, onSubmit }) => {
     }
 
     validationSchema[key] = validator;
+    
+    if (formStructure[key].type === "checkbox") {
+      initialValues[key] = false;
+    }
   });
 
   const formik = useFormik({
@@ -101,18 +117,33 @@ const UserInviteComponent = ({ inviteModel, handleInviteClose, onSubmit }) => {
         <form onSubmit={formik.handleSubmit}>
           {Object.keys(formStructure).map((key) => (
             <div className="mb-4" key={key}>
-              <TextField
-                label={formStructure[key].label}
-                variant="outlined"
-                type={formStructure[key].type}
-                fullWidth
-                name={key}
-                value={formik.values[key]}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={formik.touched[key] && Boolean(formik.errors[key])}
-                helperText={formik.touched[key] && formik.errors[key]}
-              />
+              {formStructure[key].type === "checkbox" ? (
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      name={key}
+                      checked={formik.values[key]}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      color="primary"
+                    />
+                  }
+                  label={formStructure[key].label}
+                />
+              ) : (
+                <TextField
+                  label={formStructure[key].label}
+                  variant="outlined"
+                  type={formStructure[key].type}
+                  fullWidth
+                  name={key}
+                  value={formik.values[key]}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  error={formik.touched[key] && Boolean(formik.errors[key])}
+                  helperText={formik.touched[key] && formik.errors[key]}
+                />
+              )}
             </div>
           ))}
           <Button
