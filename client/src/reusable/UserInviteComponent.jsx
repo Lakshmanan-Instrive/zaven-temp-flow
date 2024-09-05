@@ -90,7 +90,7 @@ const UserInviteComponent = ({
         }}
       >
         <Typography id="modal-modal-title" variant="h6" component="h2">
-          Invite Legal Service
+          Invite User
         </Typography>
         <form onSubmit={formik.handleSubmit}>
           {Object.keys(formStructure).map((key) => (
