@@ -8,6 +8,27 @@ import { useNavigate } from "react-router-dom";
 import LegalServicesList from "../../components/Admin/LegalServicesList";
 import UserInviteComponent from "../../reusable/UserInviteComponent";
 
+const formStructure = {
+  email: {
+    type: "email",
+    label: "Email",
+    required: true,
+  },
+  firstName: {
+    type: "text",
+    min: 3,
+    max: 20,
+    label: "First Name",
+    required: true,
+  },
+  surName: {
+    type: "text",
+    min: 1,
+    max: 20,
+    label: "Surname",
+    required: true,
+  },
+};
 const AdminLegalServices = () => {
   const token = localStorage.getItem("token");
 
@@ -88,6 +109,7 @@ const AdminLegalServices = () => {
           inviteModel={inviteModel}
           handleInviteClose={handleInviteClose}
           onSubmit={onSubmit}
+          formStructure={formStructure}
         />
       </Box>
     </Container>

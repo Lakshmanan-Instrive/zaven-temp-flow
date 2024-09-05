@@ -11,34 +11,12 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import React from "react";
 
-const formStructure = {
-  email: {
-    type: "email",
-    label: "Email",
-    required: true,
-  },
-  firstName: {
-    type: "text",
-    min: 3,
-    max: 20,
-    label: "First Name",
-    required: true,
-  },
-  surName: {
-    type: "text",
-    min: 1,
-    max: 20,
-    label: "Surname",
-    required: true,
-  },
-  canInvite: {
-    type: "checkbox",
-    label: "Can Invite",
-    required: false,
-  },
-};
-
-const UserInviteComponent = ({ inviteModel, handleInviteClose, onSubmit }) => {
+const UserInviteComponent = ({
+  inviteModel,
+  handleInviteClose,
+  onSubmit,
+  formStructure,
+}) => {
   const initialValues = {};
   const validationSchema = {};
   Object.keys(formStructure).forEach((key) => {
@@ -76,7 +54,7 @@ const UserInviteComponent = ({ inviteModel, handleInviteClose, onSubmit }) => {
     }
 
     validationSchema[key] = validator;
-    
+
     if (formStructure[key].type === "checkbox") {
       initialValues[key] = false;
     }
