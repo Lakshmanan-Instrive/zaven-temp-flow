@@ -19,16 +19,16 @@ module.exports = {
       throw boom.badRequest(error);
     }
   },
-  getUserList: async (page, limit, role) => {
+  getUserList: async (page, limit, role, roleId) => {
     try {
       const skip = (parseInt(page) - 1) * parseInt(limit);
       console.log(skip, "skip");
       const [users, totalPages] = await Promise.all([
-        User.find({ role })
+        User.find({ role, ...roleId })
           .skip(skip)
           .select({ email: 1, firstName: 1, surName: 1, status: 1 })
           .limit(parseInt(limit)),
-        User.countDocuments({ role }),
+        User.countDocuments({ role, ...roleId }),
       ]);
 
       return { users, totalPages };

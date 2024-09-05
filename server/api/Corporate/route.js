@@ -40,9 +40,16 @@ router.get(
 
 router.post(
   "/invite",
-  checkJwtExpiry(["CP"], (canInvite = true)),
+  checkJwtExpiry(["CP"], (primary = true)),
   celebrate(schema.invite, schema.options),
   c(controller.invite, (req, res, next) => [req.body, req.user])
+);
+
+router.patch(
+  "/user/status-update",
+  checkJwtExpiry(["CP"], (primary = true)),
+  celebrate(schema.userStatus, schema.options),
+  c(controller.userStatus, (req, res, next) => [req.body, req.user])
 );
 
 module.exports = router;

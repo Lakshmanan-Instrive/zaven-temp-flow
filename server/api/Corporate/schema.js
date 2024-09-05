@@ -29,6 +29,13 @@ module.exports.invite = {
     firstName: joi.string().required(),
     surName: joi.string().required(),
     email: joi.string().email().required(),
-    canInvite: joi.boolean().required(),
+    primary: joi.boolean().required(),
+  }),
+};
+
+module.exports.userStatus = {
+  body: joi.object().keys({
+    status: joi.number().required(),
+    userId: joi.string().required(),
   }),
 };

@@ -49,7 +49,7 @@ const UserListComponent = ({
                   <TableCell>{user.email}</TableCell>
                   <TableCell>{user.firstName}</TableCell>
                   <TableCell>{user.surName}</TableCell>
-                  <TableCell>{user.status}</TableCell>
+                  <TableCell>{user.status === 1 ? "Active" : "Inactive"}</TableCell>
                   <TableCell>
                     <IconButton
                       onClick={() => {

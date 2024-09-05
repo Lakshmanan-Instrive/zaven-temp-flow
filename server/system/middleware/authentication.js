@@ -1,8 +1,8 @@
 const jwt = require("jsonwebtoken");
 const { findBlockList } = require("../../api/BlockList/service");
 
-function checkJwtExpiry(accessibleRoles, canInvite) {
-  return async(req, res, next) => {
+function checkJwtExpiry(accessibleRoles, primary) {
+  return async (req, res, next) => {
     console.log("check jwt expiry");
     // Get the JWT token from the request headers or cookies
     const token = req.headers.authorization || req?.cookies?.jwt;
@@ -22,19 +22,18 @@ function checkJwtExpiry(accessibleRoles, canInvite) {
           .status(401)
           .json({ error: "Unauthorized", message: "Token has been revoked" });
       }
-            // Verify the JWT token and extract the payload
+      // Verify the JWT token and extract the payload
       const payload = jwt.verify(
         tokenWithoutPrefix,
         process.env.JWT_SECRET_KEY
       );
-      if(canInvite){
-        if(!payload.data.canInvite){
+      if (primary) {
+        if (!payload.data.primary) {
           return res
-          .status(403)
-          .json({ error: "forbidden", message: "Permission Denied" });
+            .status(403)
+            .json({ error: "forbidden", message: "Permission Denied" });
         }
       }
-      console.log("payload", payload, accessibleRoles);
       req.user = payload.data;
       if (!accessibleRoles.includes(payload.data.role)) {
         return res

@@ -141,7 +141,8 @@ const getUserList = async (params, user) => {
   const { users, totalPages } = await UserService.getUserList(
     page,
     limit,
-    user.role
+    user.role,
+    user.roleId
   );
   const result = {
     message: "Legal Service List Fetched",
@@ -152,7 +153,7 @@ const getUserList = async (params, user) => {
 
 const invite = async (params, user) => {
   console.log(params);
-  const { email, firstName, surName, canInvite } = params;
+  const { email, firstName, surName, primary } = params;
   const role = "LS";
   const accessCode = generateUniqueId();
 
@@ -164,7 +165,7 @@ const invite = async (params, user) => {
     role,
     ...user.roleId,
     status: 1,
-    canInvite,
+    primary,
   });
 
   if (userCreated.status === 1) {
@@ -184,6 +185,24 @@ const invite = async (params, user) => {
   return result;
 };
 
+const userStatus = async (params, user) => {
+  console.log(params);
+  const { status, userId } = params;
+  const result = await AuthService.statusUpdate(
+    user.roleId.legalServiceId,
+    { status },
+    "LS",
+    new ObjectId(userId)
+  );
+  if (!result) {
+    throw boom.notFound("User not found");
+  }
+  return {
+    message: "User Status Updated",
+    detail: result,
+  };
+};
+
 module.exports = {
   create,
   list,
@@ -191,4 +210,5 @@ module.exports = {
   getProfile,
   getUserList,
   invite,
+  userStatus,
 };

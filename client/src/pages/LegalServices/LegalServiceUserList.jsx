@@ -23,9 +23,9 @@ const formStructure = {
     label: "Surname",
     required: true,
   },
-  canInvite: {
+  primary: {
     type: "checkbox",
-    label: "Can Invite",
+    label: "Primary",
     required: false,
   },
 };
@@ -41,29 +41,30 @@ const LegalServiceUserList = ({ role }) => {
   const [inviteModel, setInviteModel] = useState(false);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_API_ENDPOINT}/legal-services/user-list?page=${
-            page + 1
-          }&limit=${limit}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        const data = await response.json();
-        setUsersData(data.detail.data);
-        setTotal(data.detail.total);
-      } catch (error) {
-        console.log(error);
-      }
-    };
+   
     fetchData();
   }, [page, limit]);
+  const fetchData = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_ENDPOINT}/legal-services/user-list?page=${
+          page + 1
+        }&limit=${limit}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const data = await response.json();
+      setUsersData(data.detail.data);
+      setTotal(data.detail.total);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handlePageChange = (event, newPage) => {
     setPage(newPage);
@@ -100,6 +101,7 @@ const LegalServiceUserList = ({ role }) => {
         } else {
           alert("Legal Service Invited Successfully");
           handleInviteClose();
+          fetchData();
         }
       })
       .catch((error) => {

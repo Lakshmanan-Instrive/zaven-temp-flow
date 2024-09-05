@@ -90,13 +90,16 @@ module.exports = {
     }
   },
 
-  statusUpdate: async (id, update, type) => {
+  statusUpdate: async (id, update, type, userId) => {
     try {
       let match = {};
       if (type === "CP") {
         match = { corporateId: id };
       } else {
         match = { legalServiceId: id };
+      }
+      if (userId) {
+        match = { ...match, _id: userId };
       }
       const updatedUser = await User.findOneAndUpdate(
         match,

@@ -21,7 +21,7 @@ const MenuComponent = ({ role }) => {
 
   return (
     <>
-      <AppBarComponent handleDrawerOpen={handleDrawerOpen} />
+      <AppBarComponent handleDrawerOpen={handleDrawerOpen} role={role} />
       <Drawer
         PaperProps={{
           sx: { width: "300px" },
