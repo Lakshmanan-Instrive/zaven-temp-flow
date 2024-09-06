@@ -58,7 +58,7 @@ module.exports = {
       user.password = newPassword;
       await user.save();
 
-      return "Password changed successfully";
+      return user;
     } catch (error) {
       console.log(error, "error");
       throw boom.badRequest(error);

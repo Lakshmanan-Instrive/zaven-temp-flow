@@ -89,6 +89,8 @@ const login = async (params) => {
         _id: userData._id,
         roleId,
         primary: userData.primary || false,
+        generatedDate: Date.now(),
+        uniqueId: generateUniqueId(),
       },
       expiresIn: 1,
     });

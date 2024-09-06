@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const { findBlockList } = require("../../api/BlockList/service");
+const cacheInstance = require("../utils/cache_reset_password");
 
 function checkJwtExpiry(accessibleRoles, primary) {
   return async (req, res, next) => {
@@ -22,11 +23,26 @@ function checkJwtExpiry(accessibleRoles, primary) {
           .status(401)
           .json({ error: "Unauthorized", message: "Token has been revoked" });
       }
+
       // Verify the JWT token and extract the payload
       const payload = jwt.verify(
         tokenWithoutPrefix,
         process.env.JWT_SECRET_KEY
       );
+      console.log("payload", payload.data._id, payload.data.generatedDate);
+      if (payload.data.generatedDate) {
+        let cacheData = await cacheInstance.retrieve(
+          payload.data._id,
+          payload.data.generatedDate,
+          payload.data.uniqueId
+        );
+        if (cacheData) {
+          return res.status(401).json({
+            error: "Unauthorized",
+            message: "Password updated by someone",
+          });
+        }
+      }
       if (primary) {
         if (!payload.data.primary) {
           return res

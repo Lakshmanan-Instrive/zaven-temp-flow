@@ -1,6 +1,7 @@
 const service = require("./service");
 const boom = require("@hapi/boom");
 const utilsChecks = require("../../system/utils/checks");
+const cacheInstance = require("../../system/utils/cache_reset_password");
 
 const list = async () => {
   const getList = await service.list();
@@ -27,6 +28,7 @@ const changePassword = async (params, user) => {
   if (!changePassword) {
     throw boom.badRequest("Password Change Failed");
   }
+  await cacheInstance.push(user._id, user.uniqueId);
   const result = {
     message: "Password Changed Successfully",
   };

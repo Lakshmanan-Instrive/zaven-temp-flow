@@ -57,6 +57,13 @@ const CorporateUserList = ({ role }) => {
         }
       );
       const data = await response.json();
+      if(data.error){
+        alert(data.error);
+        if (data.error === "Unauthorized") {
+          localStorage.clear();
+          window.location.href = "/login";
+        }
+      }
       setUsersData(data.detail.data);
       setTotal(data.detail.total);
     } catch (error) {
