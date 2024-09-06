@@ -14,8 +14,26 @@ const list = async () => {
   return result;
 };
 
-module.exports = {
-  list,
+const changePassword = async (params, user) => {
+  let data = {
+    userId: user._id,
+    currentPassword: params.oldPassword,
+    newPassword: params.newPassword,
+  };
+  if (params.newPassword !== params.confirmPassword) {
+    throw boom.badRequest("Password and Confirm Password do not match");
+  }
+  const changePassword = await service.changePassword(data);
+  if (!changePassword) {
+    throw boom.badRequest("Password Change Failed");
+  }
+  const result = {
+    message: "Password Changed Successfully",
+  };
+  return result;
 };
 
-
+module.exports = {
+  list,
+  changePassword,
+};

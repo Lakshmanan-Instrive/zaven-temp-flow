@@ -13,6 +13,8 @@ import {
   Typography,
   Button,
 } from "@mui/material";
+import CheckIcon from "@mui/icons-material/Check";
+import CloseIcon from "@mui/icons-material/Close";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 
 const UserListComponent = ({
@@ -28,6 +30,7 @@ const UserListComponent = ({
   selected,
   setSelected,
   handleClose,
+  acceptOrRejectUser,
 }) => {
   return (
     <>
@@ -49,7 +52,13 @@ const UserListComponent = ({
                   <TableCell>{user.email}</TableCell>
                   <TableCell>{user.firstName}</TableCell>
                   <TableCell>{user.surName}</TableCell>
-                  <TableCell>{user.status === 1 ? "Active" : "Inactive"}</TableCell>
+                  <TableCell>
+                    {user.status === 0 && (
+                      <HourglassBottomIcon color="warning" />
+                    )}
+                    {user.status === 1 && <CheckIcon color="success" />}
+                    {user.status === 2 && <CloseIcon color="error" />}
+                  </TableCell>
                   <TableCell>
                     <IconButton
                       onClick={() => {
@@ -59,6 +68,20 @@ const UserListComponent = ({
                     >
                       <VisibilityIcon />
                     </IconButton>
+                    {user.status !== 1 && (
+                      <IconButton
+                        onClick={() => acceptOrRejectUser(user._id, 1)}
+                      >
+                        <CheckIcon />
+                      </IconButton>
+                    )}
+                    {user.status !== 2 && (
+                      <IconButton
+                        onClick={() => acceptOrRejectUser(user._id, 2)}
+                      >
+                        <CloseIcon />
+                      </IconButton>
+                    )}
                   </TableCell>
                 </TableRow>
               ))}

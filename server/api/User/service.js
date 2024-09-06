@@ -37,4 +37,31 @@ module.exports = {
       throw boom.badRequest(error);
     }
   },
+
+  changePassword: async (data) => {
+    try {
+      const { userId, currentPassword, newPassword } = data;
+
+      // Find the user by userId
+      const user = await User.findById(userId);
+      if (!user) {
+        throw boom.notFound("User not found");
+      }
+
+      // Compare the current password with the one stored in the database
+      const isMatch = await bcrypt.compare(currentPassword, user.password);
+      if (!isMatch) {
+        throw boom.badRequest("Invalid current password");
+      }
+
+      // Update the user's password
+      user.password = newPassword;
+      await user.save();
+
+      return "Password changed successfully";
+    } catch (error) {
+      console.log(error, "error");
+      throw boom.badRequest(error);
+    }
+  },
 };

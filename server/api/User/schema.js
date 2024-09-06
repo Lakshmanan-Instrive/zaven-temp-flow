@@ -6,5 +6,8 @@ module.exports.options = {
   stripUnknown: true,
 };
 
-
-
+module.exports.changePassword = {
+  oldPassword: joi.string().required(),
+  newPassword: joi.string().required(),
+  confirmPassword: joi.string().required(),
+};

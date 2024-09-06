@@ -41,7 +41,6 @@ const LegalServiceUserList = ({ role }) => {
   const [inviteModel, setInviteModel] = useState(false);
 
   useEffect(() => {
-   
     fetchData();
   }, [page, limit]);
   const fetchData = async () => {
@@ -110,6 +109,31 @@ const LegalServiceUserList = ({ role }) => {
       });
   };
 
+  const acceptOrRejectUser = (userId, status) => {
+    fetch(
+      `${import.meta.env.VITE_API_ENDPOINT}/legal-services/user/status-update`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ userId, status }),
+      }
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.error) {
+          alert(data.error);
+        } else {
+          fetchData();
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   return (
     <Container sx={{ padding: "20px", mt: "70px" }}>
       <Box sx={{ mb: 5 }}>
@@ -147,6 +171,7 @@ const LegalServiceUserList = ({ role }) => {
           setSelected={setSelected}
           setLimit={setLimit}
           setPage={setPage}
+          acceptOrRejectUser={acceptOrRejectUser}
         />
         <UserInviteComponent
           inviteModel={inviteModel}
