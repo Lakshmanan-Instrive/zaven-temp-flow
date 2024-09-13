@@ -7,22 +7,10 @@ const controller = require("./controller");
 const schema = require("./schema");
 const checkJwtExpiry = require("../../system/middleware/authentication");
 
-router.get(
+router.post(
   "/",
   checkJwtExpiry,
-  c(controller.list, (req, res, next) => [])
-);
+  c(controller.create, (req, res, next) => [])
+); 
 
-router.patch(
-  "/change-password",
-  checkJwtExpiry(["LS", "CP", "ADMIN"]),
-  celebrate({ body: schema.changePassword }),
-  c(controller.changePassword, (req, res, next) => [req.body, req.user])
-);
-
-router.post(
-  "/refresh-token",
-  checkJwtExpiry,
-  c(controller.refreshToken, (req, res, next) => [req.user])
-);
 module.exports = router;

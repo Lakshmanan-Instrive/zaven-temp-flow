@@ -1,6 +1,7 @@
 const boom = require("@hapi/boom");
 const jwt = require("jsonwebtoken");
 const service = require("./service");
+const refreshService = require("../RefreshToken/service");
 const { createBlockList } = require("../BlockList/service");
 const sendEmail = require("../../system/utils/send_email");
 const { decrypt } = require("../../system/utils/crypto");
@@ -67,7 +68,7 @@ const changePassword = async (params) => {
   return result;
 };
 
-const login = async (params) => {
+const login = async (params, res) => {
   const result = {};
   const { email, password } = params;
   const userData = await service.login({ email, password });
@@ -94,6 +95,35 @@ const login = async (params) => {
       },
       expiresIn: 1,
     });
+
+    const refreshToken = await generateAccessToken({
+      data: {
+        email: userData.email,
+        role: userData.role,
+        firstName: userData.firstName,
+        surName: userData.surName,
+        _id: userData._id,
+        roleId,
+        primary: userData.primary || false,
+        generatedDate: Date.now(),
+        uniqueId: generateUniqueId(),
+      },
+      expiresIn: 2,
+    });
+
+    await refreshService.create({
+      userId: userData._id,
+      useragent: params.useragent.source,
+      refreshToken,
+      expiresAt: new Date(Date.now() + 2 * 60 * 60 * 1000), // 2 hours from now
+    });
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "none",
+    });
+
     const session = {
       accessToken,
       email: userData.email,
