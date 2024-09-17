@@ -28,6 +28,7 @@ const legalServicesRoutes = require("./api/LegalServices/route");
 const userRoutes = require("./api/User/route");
 const authRoutes = require("./api/Auth/route");
 const corporateRoutes = require("./api/Corporate/route");
+const refreshTokenRoutes = require("./api/RefreshToken/route");
 
 app.use(userAgent.express());
 app.use(cors(middlewareConfig.cors));
@@ -58,6 +59,7 @@ app.use("/api/legal-services", legalServicesRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/corporate", corporateRoutes);
+app.use("/api/refresh-token", refreshTokenRoutes);
 
 // middleware
 

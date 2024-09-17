@@ -11,6 +11,7 @@ const AuthProvider = ({ children }) => {
       : null
   );
   const [isAuthenticated, setIsAuthenticated] = useState(!!token);
+  const [timeoutId, setTimeoutId] = useState(null);
 
   const setToken = (newToken) => {
     if (newToken) {
@@ -20,7 +21,7 @@ const AuthProvider = ({ children }) => {
         if (decodedUser.exp * 1000 < Date.now()) {
           throw new Error("Token expired");
         }
-
+        scheduleTokenRefresh(decodedUser.exp);
         setToken_(newToken);
         setUser(decodedUser);
         setIsAuthenticated(true);
@@ -50,6 +51,41 @@ const AuthProvider = ({ children }) => {
     }
   };
 
+  const scheduleTokenRefresh = (expiryAt) => {
+    const expiresIn = expiryAt - Date.now();
+    const refreshTime = expiresIn - 10 * 60 * 1000;
+    if (refreshTime > 0) {
+      const id = setTimeout(() => {
+        refreshTokenCall();
+      }, refreshTime);
+      setTimeoutId(id);
+    } else {
+      refreshTokenCall();
+    }
+  };
+
+  const refreshTokenCall = async () => {
+    fetch(`${import.meta.env.VITE_API_ENDPOINT}/refresh-token`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ userId: user._id }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setToken(data.accessToken);
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+        }
+      })
+      .catch((error) => {
+        console.error("Token refresh error:", error.message);
+        setToken(null);
+      });
+  };
+
   useEffect(() => {
     window.addEventListener("storage", handleStorageEvent);
 
@@ -57,6 +93,10 @@ const AuthProvider = ({ children }) => {
       window.removeEventListener("storage", handleStorageEvent);
     };
   }, []);
+
+  useEffect(() => {
+    scheduleTokenRefresh(user?.exp * 1000);
+  }, [token]);
 
   const contextValue = useMemo(
     () => ({
