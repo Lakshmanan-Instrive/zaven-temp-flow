@@ -1,6 +1,5 @@
 import axios from "axios";
 
-const token = localStorage.getItem("token");
 // Create an instance of Axios
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_ENDPOINT, // Replace with your API base URL
@@ -10,6 +9,7 @@ const axiosInstance = axios.create({
 // Add an interceptor for request
 axiosInstance.interceptors.request.use(
   (config) => {
+    const token = localStorage.getItem("token");
     // You can modify the request config here (e.g., add headers, authentication tokens, etc.)
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -29,6 +29,12 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   (error) => {
+    if (error.response.status === 401 || error.response.status === 403) {
+      localStorage.clear();
+      window.location.href = "/login";
+    } else {
+      alert(error.response.data.error);
+    }
     // Handle response error
     return Promise.reject(error);
   }

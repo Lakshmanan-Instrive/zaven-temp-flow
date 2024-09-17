@@ -13,8 +13,8 @@ class AuthService {
     return http.post(this.endpoint("verify"), data);
   }
 
-  logout() {
-    return http.post(this.endpoint("logout"));
+  logout(data) {
+    return http.post(this.endpoint("logout"), data);
   }
 
   invite(data) {

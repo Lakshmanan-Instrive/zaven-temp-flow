@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import ChangePasswordComponent from "../../reusable/ChangePasswordComponent";
+import { change_password_call } from "../../store/slices/AuthSlice";
+import { useDispatch } from "react-redux";
 
 const formStructure = {
   password: {
@@ -20,6 +22,7 @@ const formStructure = {
 };
 
 const ChangePassword = () => {
+  const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [accessCode, setAccessCode] = useState("");
   const navigate = useNavigate();
@@ -41,27 +44,17 @@ const ChangePassword = () => {
   const onSubmit = async (values) => {
     console.log(values);
     try {
-      fetch(`${import.meta.env.VITE_API_ENDPOINT}/auth/change-password`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+      const response = await dispatch(
+        change_password_call({
           email: email,
           accessCode: accessCode,
           password: values.password,
-        }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log(data);
-          if (data.error) {
-            alert(data.error);
-          } else {
-            alert("Password updated successfully");
-            navigate("/login");
-          }
-        });
+        })
+      );
+      if (response.payload) {
+        alert("Password updated successfully");
+        navigate("/login");
+      }
     } catch (error) {
       console.log(error);
     }

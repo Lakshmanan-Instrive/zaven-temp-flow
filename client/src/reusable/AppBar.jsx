@@ -12,6 +12,8 @@ import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import ChangePasswordComponent from "./ChangePasswordComponent";
+import { logout_call } from "../store/slices/AuthSlice";
+import { useDispatch } from "react-redux";
 
 const formStructure = {
   oldPassword: {
@@ -38,37 +40,17 @@ const formStructure = {
 };
 
 const AppBarComponent = ({ handleDrawerOpen, role }) => {
+  const dispatch = useDispatch();
   const [open, setOpen] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const token = localStorage.getItem("token");
-  const logout = () => {
-    fetch(`${import.meta.env.VITE_API_ENDPOINT}/auth/logout`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ token }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-        if (data.error) {
-          alert(data.error);
-          if (data.error === "Unauthorized") {
-            localStorage.clear();
-            window.location.href = "/login";
-          }
-        } else {
-          localStorage.clear();
-          window.location.href = "/login";
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-
-        // Display an error message
-      });
+  const logout = async () => {
+    console.log("logout");
+    const response = await dispatch(logout_call({ token }));
+    if (response.payload) {
+      localStorage.clear();
+      window.location.href = "/login";
+    }
   };
 
   const handleMenu = (event) => {

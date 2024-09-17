@@ -19,18 +19,11 @@ export const Login = () => {
       password: Yup.string().required("Required"),
     }),
     onSubmit: async (values) => {
-      try {
-        const loginResponse = await dispatch(login_call(values));
-        console.log("Login response:", loginResponse);
-        if (loginResponse.payload?.session?.accessToken) {
-          setToken(loginResponse.payload.session.accessToken);
-        }
-        if (loginResponse.error) {
-          alert("Invalid email or password");
-        }
+      const loginResponse = await dispatch(login_call(values));
+      console.log("Login response:", loginResponse);
+      if (loginResponse.payload?.session?.accessToken) {
+        setToken(loginResponse.payload.session.accessToken);
         navigate("/", { replace: true });
-      } catch (error) {
-        console.error("Login error:", error.message);
       }
     },
   });

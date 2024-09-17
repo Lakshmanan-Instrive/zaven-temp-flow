@@ -7,6 +7,8 @@ import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
 import LegalServicesList from "../../components/Admin/LegalServicesList";
 import UserInviteComponent from "../../reusable/UserInviteComponent";
+import { invite_call } from "../../store/slices/AuthSlice";
+import { useDispatch } from "react-redux";
 
 const formStructure = {
   email: {
@@ -32,6 +34,8 @@ const formStructure = {
 const AdminLegalServices = () => {
   const token = localStorage.getItem("token");
 
+  const dispatch = useDispatch();
+
   const [inviteModel, setInviteModel] = useState(false);
 
   const handleInviteOpen = () => {
@@ -44,32 +48,19 @@ const AdminLegalServices = () => {
   };
 
   const onSubmit = async (values) => {
-    fetch(`${import.meta.env.VITE_API_ENDPOINT}/auth/invite`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(values),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-        if (data.error) {
-          alert(data.error);
-          if (data.error === "Unauthorized") {
-            localStorage.clear();
-            window.location.href = "/login";
-          }
-        } else {
-          alert("Legal Service Invited Successfully");
-          handleInviteClose();
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        // Display an error message
-      });
+    try {
+      const response = await dispatch(invite_call(values));
+      console.log(response);
+      if (response.payload.message) {
+        alert(response.payload.message);
+        handleInviteClose();
+      } else if (response.payload) {
+        alert("Invite sent successfully");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      // Display an error message
+    }
   };
 
   return (

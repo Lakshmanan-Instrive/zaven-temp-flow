@@ -10,8 +10,8 @@ export const login_call = createAsyncThunk("auth/login", async (data) => {
   return response.data;
 });
 
-export const logout_call = createAsyncThunk("auth/logout", async () => {
-  const response = await AuthService.logout();
+export const logout_call = createAsyncThunk("auth/logout", async (data) => {
+  const response = await AuthService.logout(data);
   return response.data;
 });
 
@@ -54,6 +54,7 @@ const authSlice = createSlice({
       return action.payload;
     });
     builder.addCase(invite_call.fulfilled, (state, action) => {
+      console.log("Invite Response", action.payload);
       return action.payload;
     });
   },
