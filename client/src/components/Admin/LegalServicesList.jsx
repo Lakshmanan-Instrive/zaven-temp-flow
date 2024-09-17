@@ -13,6 +13,7 @@ import {
   Box,
   Typography,
   Button,
+  Tooltip,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import CheckIcon from "@mui/icons-material/Check";
@@ -120,41 +121,60 @@ const LegalServicesList = ({ role }) => {
                   <TableCell>{legal.companyAddress}</TableCell>
                   <TableCell>{legal.zipCode}</TableCell>
                   <TableCell>
-                    {legal.status === 0 && (
-                      <HourglassBottomIcon color="warning" />
-                    )}
-                    {legal.status === 1 && <CheckIcon color="success" />}
-                    {legal.status === 2 && <CloseIcon color="error" />}
+                    <Box
+                      style={{
+                        backgroundColor:
+                          legal.status === 0
+                            ? "yellow"
+                            : legal.status === 1
+                            ? "green"
+                            : "red",
+                        textAlign: "center",
+                        padding: "5px",
+                        borderRadius: "5px",
+                        color: legal.status === 0 ? "inherit" : "white",
+                      }}
+                    >
+                      {legal.status === 0 && "Pending"}
+                      {legal.status === 1 && "Active"}
+                      {legal.status === 2 && "Inactive"}
+                    </Box>
                   </TableCell>
                   {!role && (
                     <TableCell>
                       <span
-                      style={{ cursor: "pointer" }}
+                        style={{ cursor: "pointer" }}
                         onClick={() => {
                           console.log(legal, "legal");
                           setOpenModal(true);
                           setSelected(legal);
                         }}
                       >
-                        <VisibilityIcon />
+                        <Tooltip title="View" placement="top">
+                          <VisibilityIcon />
+                        </Tooltip>
                       </span>
                       {legal.status !== 1 && (
-                        <IconButton
-                          onClick={() =>
-                            approveRejectLegalService(legal._id, 1)
-                          }
-                        >
-                          <CheckIcon />
-                        </IconButton>
+                        <Tooltip title="Approve" placement="top">
+                          <IconButton
+                            onClick={() =>
+                              approveRejectLegalService(legal._id, 1)
+                            }
+                          >
+                            <CheckIcon />
+                          </IconButton>
+                        </Tooltip>
                       )}
                       {legal.status !== 2 && (
-                        <IconButton
-                          onClick={() =>
-                            approveRejectLegalService(legal._id, 2)
-                          }
-                        >
-                          <CloseIcon />
-                        </IconButton>
+                        <Tooltip title="Reject" placement="top">
+                          <IconButton
+                            onClick={() =>
+                              approveRejectLegalService(legal._id, 2)
+                            }
+                          >
+                            <CloseIcon />
+                          </IconButton>
+                        </Tooltip>
                       )}
                     </TableCell>
                   )}

@@ -13,6 +13,7 @@ import {
   Button,
   IconButton,
   Box,
+  Tooltip,
 } from "@mui/material";
 
 import CloseIcon from "@mui/icons-material/Close";
@@ -144,11 +145,20 @@ const CorporateList = ({ role }) => {
                   <TableCell>{corp.companyAddress}</TableCell>
                   <TableCell>{corp.zipCode}</TableCell>
                   <TableCell>
-                    {corp.status === 0 && (
-                      <HourglassBottomIcon color="warning" />
-                    )}
-                    {corp.status === 1 && <CheckIcon color="success" />}
-                    {corp.status === 2 && <CloseIcon color="error" />}
+                    <Box
+                      style={{
+                        backgroundColor:
+                          corp.status === 0 ? "yellow" : corp.status === 1 ? "green" : "red",
+                        textAlign: "center",
+                        padding: "5px",
+                        borderRadius: "5px",
+                        color: corp.status === 0 ? "inherit" : "white",
+                      }}
+                    >
+                      {corp.status === 0 && "Pending"}
+                      {corp.status === 1 && "Active"}
+                      {corp.status === 2 && "Inactive"}
+                    </Box>
                   </TableCell>
                   {!role && (
                     <TableCell>
@@ -160,21 +170,27 @@ const CorporateList = ({ role }) => {
                           setSelected(corp);
                         }}
                       >
-                        <VisibilityIcon />
+                        <Tooltip title="View" placement="top">
+                          <VisibilityIcon />
+                        </Tooltip>
                       </span>
                       {corp.status !== 1 && (
-                        <IconButton
-                          onClick={() => approveRejectCorporate(corp._id, 1)}
-                        >
-                          <CheckIcon />
-                        </IconButton>
+                        <Tooltip title="Approve" placement="top">
+                          <IconButton
+                            onClick={() => approveRejectCorporate(corp._id, 1)}
+                          >
+                            <CheckIcon />
+                          </IconButton>
+                        </Tooltip>
                       )}
                       {corp.status !== 2 && (
-                        <IconButton
-                          onClick={() => approveRejectCorporate(corp._id, 2)}
-                        >
-                          <CloseIcon />
-                        </IconButton>
+                        <Tooltip title="Reject" placement="top">
+                          <IconButton
+                            onClick={() => approveRejectCorporate(corp._id, 2)}
+                          >
+                            <CloseIcon />
+                          </IconButton>
+                        </Tooltip>
                       )}
                     </TableCell>
                   )}

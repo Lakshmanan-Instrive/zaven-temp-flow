@@ -21,12 +21,12 @@ const AuthProvider = ({ children }) => {
         if (decodedUser.exp * 1000 < Date.now()) {
           throw new Error("Token expired");
         }
-        scheduleTokenRefresh(decodedUser.exp);
+        setUser(decodedUser.data);
         setToken_(newToken);
-        setUser(decodedUser);
         setIsAuthenticated(true);
+        scheduleTokenRefresh(decodedUser.exp * 1000, decodedUser.data._id);
         localStorage.setItem("token", newToken);
-        localStorage.setItem("user", JSON.stringify(decodedUser));
+        localStorage.setItem("user", JSON.stringify(decodedUser.data));
       } catch (error) {
         console.error("Token error:", error.message);
         setToken(null);
@@ -51,27 +51,29 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  const scheduleTokenRefresh = (expiryAt) => {
+  const scheduleTokenRefresh = (expiryAt, userId) => {
+    console.log("Scheduling token refresh...", expiryAt, Date.now());
     const expiresIn = expiryAt - Date.now();
-    const refreshTime = expiresIn - 10 * 60 * 1000;
+    const refreshTime = expiresIn - 600000;
     if (refreshTime > 0) {
       const id = setTimeout(() => {
-        refreshTokenCall();
+        refreshTokenCall(userId);
       }, refreshTime);
       setTimeoutId(id);
     } else {
-      refreshTokenCall();
+      refreshTokenCall(userId);
     }
   };
 
-  const refreshTokenCall = async () => {
+  const refreshTokenCall = async (userId) => {
+    console.log("Refreshing token...", user);
     fetch(`${import.meta.env.VITE_API_ENDPOINT}/refresh-token`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ userId: user._id }),
+      body: JSON.stringify({ userId }),
     })
       .then((res) => res.json())
       .then((data) => {
@@ -95,7 +97,8 @@ const AuthProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    scheduleTokenRefresh(user?.exp * 1000);
+    if (user?.exp * 1000 && user?._id)
+      scheduleTokenRefresh(user?.exp * 1000, user?._id);
   }, [token]);
 
   const contextValue = useMemo(

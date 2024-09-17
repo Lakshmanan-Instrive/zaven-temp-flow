@@ -12,6 +12,7 @@ import {
   Box,
   Typography,
   Button,
+  Tooltip,
 } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
@@ -53,11 +54,25 @@ const UserListComponent = ({
                   <TableCell>{user.firstName}</TableCell>
                   <TableCell>{user.surName}</TableCell>
                   <TableCell>
-                    {user.status === 0 && (
-                      <HourglassBottomIcon color="warning" />
-                    )}
-                    {user.status === 1 && <CheckIcon color="success" />}
-                    {user.status === 2 && <CloseIcon color="error" />}
+                    <Box
+                      style={{
+                        backgroundColor:
+                          user.status === 0
+                            ? "yellow"
+                            : user.status === 1
+                            ? "green"
+                            : "red",
+                        textAlign: "center",
+                        padding: "5px",
+                        borderRadius: "5px",
+                        width: "80%",
+                        color: user.status === 0 ? "inherit" : "white",
+                      }}
+                    >
+                      {user.status === 0 && "Pending"}
+                      {user.status === 1 && "Active"}
+                      {user.status === 2 && "Inactive"}
+                    </Box>
                   </TableCell>
                   <TableCell>
                     <IconButton
@@ -66,21 +81,27 @@ const UserListComponent = ({
                         setSelected(user);
                       }}
                     >
-                      <VisibilityIcon />
+                      <Tooltip title="View" placement="top">
+                        <VisibilityIcon />
+                      </Tooltip>
                     </IconButton>
                     {user.status !== 1 && (
-                      <IconButton
-                        onClick={() => acceptOrRejectUser(user._id, 1)}
-                      >
-                        <CheckIcon />
-                      </IconButton>
+                      <Tooltip title="Approve" placement="top">
+                        <IconButton
+                          onClick={() => acceptOrRejectUser(user._id, 1)}
+                        >
+                          <CheckIcon />
+                        </IconButton>
+                      </Tooltip>
                     )}
                     {user.status !== 2 && (
-                      <IconButton
-                        onClick={() => acceptOrRejectUser(user._id, 2)}
-                      >
-                        <CloseIcon />
-                      </IconButton>
+                      <Tooltip title="Reject" placement="top">
+                        <IconButton
+                          onClick={() => acceptOrRejectUser(user._id, 2)}
+                        >
+                          <CloseIcon />
+                        </IconButton>
+                      </Tooltip>
                     )}
                   </TableCell>
                 </TableRow>

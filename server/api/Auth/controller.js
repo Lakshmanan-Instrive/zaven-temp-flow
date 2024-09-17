@@ -22,7 +22,6 @@ const verifyAccessToken = async (params) => {
   const result = {};
   const { accessCode, email } = params;
   const verified = await service.verifyAccess({ accessCode, email, status: 0 });
-  console.log(verified, "verified");
   if (verified) {
     // const setPasswordLink = await createPasswordChangeToken(
     //   verified.email,

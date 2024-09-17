@@ -32,21 +32,23 @@ const Routes = () => {
 
   const generateProtectedRoutes = (userRole) => {
     const roleRoutes = menuConfig[userRole] || [];
-    return roleRoutes ? [
-      {
-        path: "/",
-        element: (
-          <>
-            <ProtectedRoute />
-            <MenuComponent role={userRole} />
-          </>
-        ),
-        children: roleRoutes.map((route) => ({
-          path: route.link,
-          element: route.element,
-        })),
-      },
-    ] : [];
+    return roleRoutes
+      ? [
+          {
+            path: "/",
+            element: (
+              <>
+                <ProtectedRoute />
+                <MenuComponent role={userRole} />
+              </>
+            ),
+            children: roleRoutes.map((route) => ({
+              path: route.link,
+              element: route.element,
+            })),
+          },
+        ]
+      : [];
   };
   const routesFor404 = [
     {
@@ -58,7 +60,7 @@ const Routes = () => {
   // Combine and conditionally include routes based on authentication status
   const router = createBrowserRouter([
     ...routesForPublic,
-    ...generateProtectedRoutes(user?.data?.role),
+    ...generateProtectedRoutes(user?.role),
     ...routesFor404,
   ]);
 
@@ -75,7 +77,7 @@ const Routes = () => {
       }}
       onError={logErrorToService}
     >
-      {user?.data?.role && <MenuComponent role={user.data.role} />}
+      {user?.role && <MenuComponent role={user.role} />}
       <RouterProvider router={router}></RouterProvider>
     </ErrorBoundary>
   );

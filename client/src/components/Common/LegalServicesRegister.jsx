@@ -10,6 +10,8 @@ import {
   Modal,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { verify_call } from "../../store/slices/AuthSlice";
+import { useDispatch } from "react-redux";
 
 // Example JSON structure from the database
 const formStructure = {
@@ -56,6 +58,7 @@ const legalServiceForm = {
 
 const LegalServiceRegisterPage = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   // Generate initial values and validation schema based on formStructure
   const initialValues = {};
   const validationSchema = {};
@@ -118,7 +121,6 @@ const LegalServiceRegisterPage = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            
           },
           body: JSON.stringify(values),
         })
@@ -128,7 +130,9 @@ const LegalServiceRegisterPage = () => {
             if (data.error) {
               alert(data.error);
             } else {
-              alert("Legal Service Registered Successfully Waiting for Approval");
+              alert(
+                "Legal Service Registered Successfully Waiting for Approval"
+              );
               navigate("/login");
             }
           })
@@ -137,26 +141,19 @@ const LegalServiceRegisterPage = () => {
           });
       } else {
         console.log(values);
-        await fetch(`${import.meta.env.VITE_API_ENDPOINT}/auth/verify`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(values),
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.error) {
-              alert(
-                "Invalid Access Code, User May Already approved or waiting for approval"
-              );
-            } else {
-              setOpen(true);
-            }
-          })
-          .catch((error) => {
-            console.error("Error:", error);
-          });
+
+        try {
+          const data = await dispatch(verify_call(values));
+          if (data.error) {
+            alert(
+              "Invalid Access Code, User May Already approved or waiting for approval"
+            );
+          } else {
+            setOpen(true);
+          }
+        } catch (error) {
+          console.error("Error:", error);
+        }
       }
     },
   });
@@ -197,7 +194,7 @@ const LegalServiceRegisterPage = () => {
             variant="outlined"
             color="primary"
             type="button"
-            onClick={()=> navigate("/login")}
+            onClick={() => navigate("/login")}
             sx={{ mt: 3, mb: 2 }}
             fullWidth
           >

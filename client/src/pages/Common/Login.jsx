@@ -3,8 +3,11 @@ import * as Yup from "yup";
 import { TextField, Button, Container, Typography, Box } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../utils/AuthProvider";
+import { useDispatch } from "react-redux";
+import { login_call } from "../../store/slices/AuthSlice";
 export const Login = () => {
   const { setToken } = useAuth();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const formik = useFormik({
     initialValues: {
@@ -15,32 +18,20 @@ export const Login = () => {
       email: Yup.string().email("Invalid email").required("Required"),
       password: Yup.string().required("Required"),
     }),
-    onSubmit: (values) => {
-      console.log(values);
-      const url = `${import.meta.env.VITE_API_ENDPOINT}/auth/login`;
-      const options = {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
-      };
-      fetch(url, options)
-        .then((response) => response.json())
-        .then((data) => {
-          if (data?.session?.accessToken) {
-            setToken(data.session.accessToken);
-          }
-          if (data.error) {
-            alert(data.error);
-          } else {
-            console.log(data);
-            navigate("/", { replace: true });
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+    onSubmit: async (values) => {
+      try {
+        const loginResponse = await dispatch(login_call(values));
+        console.log("Login response:", loginResponse);
+        if (loginResponse.payload?.session?.accessToken) {
+          setToken(loginResponse.payload.session.accessToken);
+        }
+        if (loginResponse.error) {
+          alert("Invalid email or password");
+        }
+        navigate("/", { replace: true });
+      } catch (error) {
+        console.error("Login error:", error.message);
+      }
     },
   });
 
