@@ -1,9 +1,12 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { jwtDecode } from "jwt-decode"; // Note: Changed from `jwtDecode` to `jwt-decode` to match npm package
+import { refresh_token_call } from "../store/slices/RefreshTokenSlice";
+import { useDispatch } from "react-redux";
 
 const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
+  const dispatch = useDispatch();
   const [token, setToken_] = useState(localStorage.getItem("token"));
   const [user, setUser] = useState(
     localStorage.getItem("user")
@@ -67,25 +70,8 @@ const AuthProvider = ({ children }) => {
 
   const refreshTokenCall = async (userId) => {
     console.log("Refreshing token...", user);
-    fetch(`${import.meta.env.VITE_API_ENDPOINT}/refresh-token`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ userId }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setToken(data.accessToken);
-        if (timeoutId) {
-          clearTimeout(timeoutId);
-        }
-      })
-      .catch((error) => {
-        console.error("Token refresh error:", error.message);
-        setToken(null);
-      });
+    const response = await dispatch(refresh_token_call({ userId }));
+    setToken(response.payload.token);
   };
 
   useEffect(() => {
