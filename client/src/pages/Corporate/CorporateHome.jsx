@@ -1,42 +1,24 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ProfileComponent from "../../reusable/ProfileComponent";
+import { get_corporate_profile_call } from "../../store/slices/CorporateSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 const LegalServiceHome = () => {
-  const token = localStorage.getItem("token");
-  const [profile, setProfile] = useState();
+  const dispatch = useDispatch();
+
+  const { corporateProfile } = useSelector((state) => state.corporate);
+
+  const fetchProfileData = useCallback(() => {
+    dispatch(get_corporate_profile_call());
+  }, [dispatch]);
 
   useEffect(() => {
-    const fetchProfileData = async () => {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_ENDPOINT}/corporate/profile`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      const data = await response.json();
-      console.log(data);
-      if (data.error) {
-        alert(data.error);
-        if (data.error === "Unauthorized") {
-          localStorage.clear();
-          window.location.href = "/login";
-        }
-      } else {
-        console.log(data.detail, "data");
-        setProfile(data.detail[0]);
-      }
-    };
     fetchProfileData();
+  }, [fetchProfileData]);
 
-    // setFirstName(response.firstName);
-    // setSurName(response.surName);
-  }, []);
-
-  return <>{profile && <ProfileComponent profile={profile} />}</>;
+  return (
+    <>{corporateProfile && <ProfileComponent profile={corporateProfile} />}</>
+  );
 };
 
 export default LegalServiceHome;

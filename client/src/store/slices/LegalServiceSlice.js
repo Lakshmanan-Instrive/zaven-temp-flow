@@ -114,7 +114,7 @@ const legalSlice = createSlice({
     builder.addCase(get_legal_profile_call.fulfilled, (state, action) => {
       return {
         ...state,
-        legalProfile: action.payload,
+        legalProfile: action.payload.detail[0],
       };
     });
     builder.addCase(get_legal_users_call.fulfilled, (state, action) => {

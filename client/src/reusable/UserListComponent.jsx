@@ -23,8 +23,7 @@ const UserListComponent = ({
   total,
   page,
   limit,
-  setLimit,
-  setPage,
+  pageLimitChange,
   handlePageChange,
   openModal,
   setOpenModal,
@@ -115,8 +114,7 @@ const UserListComponent = ({
           page={page}
           onPageChange={handlePageChange}
           onRowsPerPageChange={(event) => {
-            setLimit(event.target.value);
-            setPage(0);
+            pageLimitChange(event.target.value);
           }}
         />
       </TableContainer>

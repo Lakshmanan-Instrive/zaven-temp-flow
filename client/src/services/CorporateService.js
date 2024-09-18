@@ -24,8 +24,12 @@ class CorporateService {
     return http.get(this.endpoint("/profile"));
   }
 
-  getCorporateUsers() {
-    return http.get(this.endpoint("/user-list"));
+  getCorporateUsers({ page, limit }) {
+    return http.get(
+      this.endpoint(
+        `/user-list?${new URLSearchParams({ page: page + 1, limit })}`
+      )
+    );
   }
 
   inviteCorporateUser(data) {

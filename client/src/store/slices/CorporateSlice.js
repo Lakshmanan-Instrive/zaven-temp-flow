@@ -51,9 +51,13 @@ export const get_corporate_profile_call = createAsyncThunk(
 
 export const get_corporate_users_call = createAsyncThunk(
   "corporate/get_corporate_users",
-  async (data) => {
-    const response = await CorporateService.getCorporateUsers(data);
-    return response.data;
+  async ({ page, limit }) => {
+    const response = await CorporateService.getCorporateUsers({ page, limit });
+    return {
+      data: response.data,
+      page,
+      limit,
+    };
   }
 );
 
@@ -114,20 +118,25 @@ const corporateSlice = createSlice({
     builder.addCase(get_corporate_profile_call.fulfilled, (state, action) => {
       return {
         ...state,
-        corporateProfile: action.payload,
+        corporateProfile: action.payload.detail[0],
       };
     });
     builder.addCase(get_corporate_users_call.fulfilled, (state, action) => {
       return {
         ...state,
-        corporateUsers: action.payload,
+        corporateUsers: {
+          ...state.corporateUsers,
+          corporateUsers: action.payload.data.detail.data,
+          total: action.payload.data.detail.total,
+          page: action.payload.page,
+          limit: action.payload.limit,
+        },
       };
     });
     builder.addCase(invite_corporate_user_call.fulfilled, (state, action) => {
-      console.log("Invite Response", action.payload);
       return {
         ...state,
-        corporateUsers: [...state.corporateUsers, action.payload],
+        payload: action.payload,
       };
     });
     builder.addCase(
@@ -135,9 +144,14 @@ const corporateSlice = createSlice({
       (state, action) => {
         return {
           ...state,
-          corporateUsers: state.corporateUsers.map((item) =>
-            item.id === action.payload.id ? action.payload : item
-          ),
+          corporateUsers: {
+            ...state.corporateUsers,
+            corporateUsers: state.corporateUsers.corporateUsers.map((item) =>
+              item._id === action.payload.detail._id
+                ? action.payload.detail
+                : item
+            ),
+          },
         };
       }
     );
