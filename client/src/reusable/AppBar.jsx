@@ -42,11 +42,12 @@ const formStructure = {
 
 const AppBarComponent = ({ handleDrawerOpen, role }) => {
   const dispatch = useDispatch();
-  const [open, setOpen] = React.useState(false);
+
+  const [changePasswordModal, setChangePasswordModal] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const token = localStorage.getItem("token");
+
   const logout = async () => {
-    console.log("logout");
+    const token = localStorage.getItem("token");
     const response = await dispatch(logout_call({ token }));
     if (response.payload) {
       localStorage.clear();
@@ -63,16 +64,14 @@ const AppBarComponent = ({ handleDrawerOpen, role }) => {
   };
 
   const changePasswordModalClose = () => {
-    setOpen(false);
+    setChangePasswordModal(false);
   };
 
   const changePasswordModalOpen = () => {
-    console.log("open", open);
-    setOpen(true);
+    setChangePasswordModal(true);
   };
 
-  const onSubmit = async (values) => {
-    console.log(values);
+  const changePasswordSubmit = async (values) => {
     const response = await dispatch(userChangePassword(values));
     console.log(response);
     if (response.payload) {
@@ -145,10 +144,14 @@ const AppBarComponent = ({ handleDrawerOpen, role }) => {
           </Menu>
         </div>
       </Toolbar>
-      <Modal open={open} onClose={changePasswordModalClose} sx={{ top: "10%" }}>
+      <Modal
+        open={changePasswordModal}
+        onClose={changePasswordModalClose}
+        sx={{ top: "10%" }}
+      >
         <ChangePasswordComponent
           formStructure={formStructure}
-          onSubmit={onSubmit}
+          onSubmit={changePasswordSubmit}
         />
       </Modal>
     </AppBar>
