@@ -98,7 +98,7 @@ const legalSlice = createSlice({
     builder.addCase(create_legal_call.fulfilled, (state, action) => {
       return {
         ...state,
-        legal: [...state.legal, action.payload],
+        payload: action.payload,
       };
     });
     builder.addCase(update_legal_status_call.fulfilled, (state, action) => {

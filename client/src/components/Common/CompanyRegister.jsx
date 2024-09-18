@@ -2,8 +2,9 @@ import React from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { TextField, Button, Container, Typography, Box } from "@mui/material";
-import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { create_corporate_call } from "../../store/slices/CorporateSlice";
+import { useDispatch } from "react-redux";
 
 // Example JSON structure from the database
 const formStructure = {
@@ -55,6 +56,7 @@ const formStructure = {
 
 const CompanyRegisterPage = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   // Generate initial values and validation schema based on formStructure
   const initialValues = {};
   const validationSchema = {};
@@ -99,30 +101,12 @@ const CompanyRegisterPage = () => {
   const formik = useFormik({
     initialValues,
     validationSchema: Yup.object(validationSchema),
-    onSubmit: (values) => {
-      // Sending form data to the backend
-      console.log(values);
-      fetch(`${import.meta.env.VITE_API_ENDPOINT}/corporate`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log(data);
-          if (data.error) {
-            alert(data.error);
-          } else {
-            alert("Company registered successfully and Waiting for approval");
-            navigate("/login");
-          }
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-          // Display an error message
-        });
+    onSubmit: async (values) => {
+      const response = await dispatch(create_corporate_call(values));
+      if (response.payload) {
+        alert("Company registered successfully and Waiting for approval");
+        navigate("/login");
+      }
     },
   });
 

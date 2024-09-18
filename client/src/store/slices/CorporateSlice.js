@@ -98,7 +98,7 @@ const corporateSlice = createSlice({
     builder.addCase(create_corporate_call.fulfilled, (state, action) => {
       return {
         ...state,
-        corporate: [...state.corporate, action.payload],
+        payload: action.payload,
       };
     });
     builder.addCase(update_corporate_status_call.fulfilled, (state, action) => {

@@ -12,6 +12,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { verify_call } from "../../store/slices/AuthSlice";
 import { useDispatch } from "react-redux";
+import { create_legal_call } from "../../store/slices/LegalServiceSlice";
 
 // Example JSON structure from the database
 const formStructure = {
@@ -117,28 +118,12 @@ const LegalServiceRegisterPage = () => {
       console.log(values);
       // Sending form data to the backend
       if (open) {
-        await fetch(`${import.meta.env.VITE_API_ENDPOINT}/legal-services`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(values),
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            console.log(data);
-            if (data.error) {
-              alert(data.error);
-            } else {
-              alert(
-                "Legal Service Registered Successfully Waiting for Approval"
-              );
-              navigate("/login");
-            }
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+        const response = await dispatch(create_legal_call(values));
+        console.log(response);
+        if (response.payload) {
+          alert("Legal Service Registered Successfully");
+          navigate("/login");
+        }
       } else {
         console.log(values);
 
