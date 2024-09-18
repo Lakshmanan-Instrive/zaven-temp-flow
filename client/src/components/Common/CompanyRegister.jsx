@@ -57,7 +57,7 @@ const formStructure = {
 const CompanyRegisterPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  // Generate initial values and validation schema based on formStructure
+
   const initialValues = {};
   const validationSchema = {};
 

@@ -23,10 +23,11 @@ const formStructure = {
 
 const ChangePassword = () => {
   const dispatch = useDispatch();
-  const [email, setEmail] = useState("");
-  const [accessCode, setAccessCode] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
+
+  const [email, setEmail] = useState("");
+  const [accessCode, setAccessCode] = useState("");
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);

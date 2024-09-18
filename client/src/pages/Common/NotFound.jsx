@@ -14,12 +14,16 @@ const NotFound = () => {
 
   return (
     <div className="h-screen flex flex-col items-center justify-center">
-      <h1>{isHome ? "Please Login For Access The Home Page" : "404 page not found"} </h1>
+      <h1>
+        {isHome
+          ? "Please Login For Access The Home Page"
+          : "404 page not found"}{" "}
+      </h1>
       <Button
         variant="outlined"
         onClick={() => (window.location.href = "/login")}
       >
-       Click Here For Login Page
+        Click Here For Login Page
       </Button>
     </div>
   );

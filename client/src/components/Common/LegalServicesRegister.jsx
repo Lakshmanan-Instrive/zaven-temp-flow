@@ -60,7 +60,7 @@ const legalServiceForm = {
 const LegalServiceRegisterPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  // Generate initial values and validation schema based on formStructure
+
   const initialValues = {};
   const validationSchema = {};
 
@@ -101,23 +101,17 @@ const LegalServiceRegisterPage = () => {
     validationSchema[key] = validator;
   });
 
-  const [open, setOpen] = React.useState(false);
+  const [legalServiceOpen, setLegalServiceOpen] = React.useState(false);
 
-  const handleOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
+  const legalServiceClose = () => {
+    setLegalServiceOpen(false);
   };
 
   const formik = useFormik({
     initialValues,
     validationSchema: Yup.object(validationSchema),
     onSubmit: async (values) => {
-      console.log(values);
-      // Sending form data to the backend
-      if (open) {
+      if (legalServiceOpen) {
         const response = await dispatch(create_legal_call(values));
         console.log(response);
         if (response.payload) {
@@ -125,19 +119,9 @@ const LegalServiceRegisterPage = () => {
           navigate("/login");
         }
       } else {
-        console.log(values);
-
-        try {
-          const data = await dispatch(verify_call(values));
-          if (data.error) {
-            alert(
-              "Invalid Access Code, User May Already approved or waiting for approval"
-            );
-          } else {
-            setOpen(true);
-          }
-        } catch (error) {
-          console.error("Error:", error);
+        const data = await dispatch(verify_call(values));
+        if (data.payload) {
+          setLegalServiceOpen(true);
         }
       }
     },
@@ -188,7 +172,11 @@ const LegalServiceRegisterPage = () => {
         </form>
       </Box>
 
-      <Modal open={open} onClose={handleClose} className="h-200">
+      <Modal
+        open={legalServiceOpen}
+        onClose={legalServiceClose}
+        className="h-200"
+      >
         <Box className="bg-white p-8 h-2/3 w-2/3 mx-auto mt-20 overflow-y-scroll">
           <Typography variant="h4" className="mb-4 text-center">
             Legal Services
@@ -230,7 +218,7 @@ const LegalServiceRegisterPage = () => {
                 variant="outlined"
                 color="primary"
                 type="button"
-                onClick={handleClose}
+                onClick={legalServiceClose}
                 className="bg-gray-200 text-gray-800 hover:bg-gray-300 ml-2"
               >
                 Cancel

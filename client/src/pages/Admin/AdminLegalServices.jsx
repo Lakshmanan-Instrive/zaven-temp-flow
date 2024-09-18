@@ -32,34 +32,27 @@ const formStructure = {
   },
 };
 const AdminLegalServices = () => {
-  const token = localStorage.getItem("token");
-
   const dispatch = useDispatch();
 
-  const [inviteModel, setInviteModel] = useState(false);
+  const [legalInviteModel, setLegalInviteModel] = useState(false);
 
-  const handleInviteOpen = () => {
+  const handleLegalInviteOpen = () => {
     console.log("invite");
-    setInviteModel(true);
+    setLegalInviteModel(true);
   };
 
-  const handleInviteClose = () => {
-    setInviteModel(false);
+  const handleLegalInviteClose = () => {
+    setLegalInviteModel(false);
   };
 
   const onSubmit = async (values) => {
-    try {
-      const response = await dispatch(invite_call(values));
-      console.log(response);
-      if (response.payload.message) {
-        alert(response.payload.message);
-        handleInviteClose();
-      } else if (response.payload) {
-        alert("Invite sent successfully");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      // Display an error message
+    const response = await dispatch(invite_call(values));
+    console.log(response);
+    if (response.payload.message) {
+      alert(response.payload.message);
+      handleLegalInviteClose();
+    } else if (response.payload) {
+      alert("Invite sent successfully");
     }
   };
 
@@ -90,15 +83,15 @@ const AdminLegalServices = () => {
             >
               Welcome to Zaven - Legal Service
             </Typography>
-            <Button variant="contained" onClick={handleInviteOpen}>
+            <Button variant="contained" onClick={handleLegalInviteOpen}>
               Invite Legal Service Providers
             </Button>
           </Box>
           <LegalServicesList />
         </Box>
         <UserInviteComponent
-          inviteModel={inviteModel}
-          handleInviteClose={handleInviteClose}
+          inviteModel={legalInviteModel}
+          handleInviteClose={handleLegalInviteClose}
           onSubmit={onSubmit}
           formStructure={formStructure}
         />

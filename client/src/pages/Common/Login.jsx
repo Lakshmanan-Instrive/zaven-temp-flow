@@ -6,9 +6,11 @@ import { useAuth } from "../../utils/AuthProvider";
 import { useDispatch } from "react-redux";
 import { login_call } from "../../store/slices/AuthSlice";
 export const Login = () => {
-  const { setToken } = useAuth();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const { setToken } = useAuth();
+
   const formik = useFormik({
     initialValues: {
       email: "",

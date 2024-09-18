@@ -28,7 +28,9 @@ import { useDispatch, useSelector } from "react-redux";
 const LegalServicesList = ({ role }) => {
   const dispatch = useDispatch();
 
-  const { legal, page, limit, total } = useSelector((state) => state.legal.legal);
+  const { legal, page, limit, total } = useSelector(
+    (state) => state.legal.legal
+  );
   console.log("legal", legal, page, limit, total);
   const [openModal, setOpenModal] = useState(false);
   const [selected, setSelected] = useState({});
@@ -39,6 +41,7 @@ const LegalServicesList = ({ role }) => {
     },
     [dispatch]
   );
+
   useEffect(() => {
     legalFetch({ page, limit });
   }, [legalFetch]);
