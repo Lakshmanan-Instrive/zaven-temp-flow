@@ -1,7 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import UserListComponent from "../../reusable/UserListComponent";
 import { Box, Button, Container, Typography } from "@mui/material";
 import UserInviteComponent from "../../reusable/UserInviteComponent";
+import {
+  get_legal_users_call,
+  invite_legal_user_call,
+  update_legal_user_status_call,
+} from "../../store/slices/LegalServiceSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 const formStructure = {
   email: {
@@ -30,108 +36,57 @@ const formStructure = {
   },
 };
 
-const LegalServiceUserList = ({ role }) => {
-  const token = localStorage.getItem("token");
-  const [page, setPage] = useState(0);
-  const [limit, setLimit] = useState(10);
-  const [total, setTotal] = useState(0);
+const LegalServiceUserList = () => {
+  const dispatch = useDispatch();
+
+  const { legalUsers, total, page, limit } = useSelector(
+    (state) => state.legal.legalUsers
+  );
+
   const [openModal, setOpenModal] = useState(false);
   const [selected, setSelected] = useState({});
-  const [usersData, setUsersData] = useState([]);
   const [inviteModel, setInviteModel] = useState(false);
 
+  const fetchLegalUsers = useCallback(
+    ({ page, limit }) => {
+      dispatch(get_legal_users_call({ page, limit }));
+    },
+    [dispatch]
+  );
+
   useEffect(() => {
-    fetchData();
-  }, [page, limit]);
-  const fetchData = async () => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_ENDPOINT}/legal-services/user-list?page=${
-          page + 1
-        }&limit=${limit}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      const data = await response.json();
-      setUsersData(data.detail.data);
-      setTotal(data.detail.total);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+    fetchLegalUsers({ page, limit });
+  }, [fetchLegalUsers]);
 
   const handlePageChange = (event, newPage) => {
-    setPage(newPage);
+    fetchLegalUsers({ page: newPage, limit });
   };
 
-  const handleClose = () => {
+  const legalViewModalClose = () => {
     setOpenModal(false);
   };
-  const handleInviteOpen = () => {
+  const legalUserInviteOpen = () => {
     setInviteModel(true);
   };
-  const handleInviteClose = () => {
+  const LegalUserInviteClose = () => {
     setInviteModel(false);
   };
 
   const onSubmit = async (values) => {
-    fetch(`${import.meta.env.VITE_API_ENDPOINT}/legal-services/invite`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(values),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-        if (data.error) {
-          alert(data.error);
-          if (data.error === "Unauthorized") {
-            localStorage.clear();
-            window.location.href = "/login";
-          }
-        } else {
-          alert("Legal Service Invited Successfully");
-          handleInviteClose();
-          fetchData();
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        // Display an error message
-      });
+    const response = await dispatch(invite_legal_user_call(values));
+    if (response.payload) {
+      alert("User Invited Successfully");
+      LegalUserInviteClose();
+      fetchLegalUsers({ page, limit });
+    }
+  };
+
+  const pageLimitChange = (limit) => {
+    fetchLegalUsers({ page: 0, limit });
   };
 
   const acceptOrRejectUser = (userId, status) => {
-    fetch(
-      `${import.meta.env.VITE_API_ENDPOINT}/legal-services/user/status-update`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ userId, status }),
-      }
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          alert(data.error);
-        } else {
-          fetchData();
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    dispatch(update_legal_user_status_call({ userId, status }));
   };
 
   return (
@@ -153,29 +108,27 @@ const LegalServiceUserList = ({ role }) => {
           >
             Welcome to Zaven - Legal Service
           </Typography>
-          <Button variant="contained" onClick={handleInviteOpen}>
+          <Button variant="contained" onClick={legalUserInviteOpen}>
             Invite Legal Service Providers
           </Button>
         </Box>
         <UserListComponent
           handlePageChange={handlePageChange}
-          handleClose={handleClose}
+          handleClose={legalViewModalClose}
           page={page}
           limit={limit}
           total={total}
           openModal={openModal}
           selected={selected}
-          usersData={usersData}
-          setUsersData={setUsersData}
+          usersData={legalUsers}
           setOpenModal={setOpenModal}
           setSelected={setSelected}
-          setLimit={setLimit}
-          setPage={setPage}
+          pageLimitChange={pageLimitChange}
           acceptOrRejectUser={acceptOrRejectUser}
         />
         <UserInviteComponent
           inviteModel={inviteModel}
-          handleInviteClose={handleInviteClose}
+          handleInviteClose={LegalUserInviteClose}
           onSubmit={onSubmit}
           formStructure={formStructure}
         />

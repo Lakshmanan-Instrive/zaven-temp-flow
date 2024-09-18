@@ -24,8 +24,12 @@ class LegalService {
     return http.get(this.endpoint("/profile"));
   }
 
-  getLegalServiceUsers() {
-    return http.get(this.endpoint("/user-list"));
+  getLegalServiceUsers({ page, limit }) {
+    return http.get(
+      this.endpoint(
+        `/user-list?${new URLSearchParams({ page: page + 1, limit })}`
+      )
+    );
   }
 
   inviteLegalServiceUser(data) {

@@ -10,7 +10,7 @@ const initialState = {
   },
   legalProfile: {},
   legalUsers: {
-    data: [],
+    legalUsers: [],
     total: 0,
     page: 0,
     limit: 10,
@@ -52,9 +52,13 @@ export const get_legal_profile_call = createAsyncThunk(
 
 export const get_legal_users_call = createAsyncThunk(
   "legal/get_legal_users",
-  async (data) => {
-    const response = await LegalService.getLegalServiceUsers(data);
-    return response.data;
+  async ({ page, limit }) => {
+    const response = await LegalService.getLegalServiceUsers({ page, limit });
+    return {
+      data: response.data,
+      page,
+      limit,
+    };
   }
 );
 
@@ -80,7 +84,6 @@ const legalSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(get_legal_call.fulfilled, (state, action) => {
-        console.log("action.payload", action.payload);
       return {
         ...state,
         legal: {
@@ -120,13 +123,19 @@ const legalSlice = createSlice({
     builder.addCase(get_legal_users_call.fulfilled, (state, action) => {
       return {
         ...state,
-        legalUsers: action.payload,
+        legalUsers: {
+          ...state.legalUsers,
+          legalUsers: action.payload.data.detail.data,
+          total: action.payload.data.detail.total,
+          page: action.payload.page,
+          limit: action.payload.limit,
+        },
       };
     });
     builder.addCase(invite_legal_user_call.fulfilled, (state, action) => {
       return {
         ...state,
-        legalUsers: [...state.legalUsers, action.payload],
+        payload: action.payload,
       };
     });
     builder.addCase(
@@ -134,9 +143,14 @@ const legalSlice = createSlice({
       (state, action) => {
         return {
           ...state,
-          legalUsers: state.legalUsers.map((item) =>
-            item.id === action.payload.id ? action.payload : item
-          ),
+          legalUsers: {
+            ...state.legalUsers,
+            legalUsers: state.legalUsers.legalUsers.map((item) =>
+              item._id === action.payload.detail._id
+                ? action.payload.detail
+                : item
+            ),
+          },
         };
       }
     );

@@ -76,6 +76,7 @@ const CorporateUserList = () => {
     if (response.payload) {
       alert("User Invited Successfully");
       corporateInviteClose();
+      fetchCorporateUsers({ page, limit });
     }
   };
 
