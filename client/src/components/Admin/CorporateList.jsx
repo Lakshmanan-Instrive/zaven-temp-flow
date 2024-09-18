@@ -29,7 +29,7 @@ const CorporateList = ({ role }) => {
   const dispatch = useDispatch();
 
   const { corporate, page, limit, total } = useSelector(
-    (state) => state.corporate
+    (state) => state.corporate.corporate
   );
   const [openCorporateViewModal, setOpenCorporateViewModal] = useState(false);
   const [selectedCorporate, setSelectedCorporate] = useState({});

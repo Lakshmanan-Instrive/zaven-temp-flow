@@ -2,12 +2,19 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import CorporateService from "../../services/CorporateService";
 
 const initialState = {
-  corporate: [],
-  page: 0,
-  limit: 10,
-  total: 0,
+  corporate: {
+    corporate: [],
+    total: 0,
+    page: 0,
+    limit: 10,
+  },
   corporateProfile: {},
-  corporateUsers: [],
+  corporateUsers: {
+    corporateUsers: [],
+    total: 0,
+    page: 0,
+    limit: 10,
+  },
 };
 
 export const get_corporate_call = createAsyncThunk(
@@ -75,10 +82,13 @@ const corporateSlice = createSlice({
       console.log("Corporate Response", action.payload.data.detail.total);
       return {
         ...state,
-        corporate: action.payload.data.detail.data,
-        page: action.payload.page,
-        limit: action.payload.limit,
-        total: action.payload.data.detail.total,
+        corporate: {
+          ...state.corporate,
+          corporate: action.payload.data.detail.data,
+          total: action.payload.data.detail.total,
+          page: action.payload.page,
+          limit: action.payload.limit,
+        },
       };
     });
     builder.addCase(create_corporate_call.fulfilled, (state, action) => {
@@ -88,12 +98,17 @@ const corporateSlice = createSlice({
       };
     });
     builder.addCase(update_corporate_status_call.fulfilled, (state, action) => {
-        console.log("Update Response", action.payload);
+      console.log("Update Response", action.payload);
       return {
         ...state,
-        corporate: state.corporate.map((item) =>
-          item._id === action.payload.detail._id ? action.payload.detail : item
-        ),
+        corporate: {
+          ...state.corporate,
+          corporate: state.corporate.corporate.map((item) =>
+            item._id === action.payload.detail._id
+              ? action.payload.detail
+              : item
+          ),
+        },
       };
     });
     builder.addCase(get_corporate_profile_call.fulfilled, (state, action) => {

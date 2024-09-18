@@ -5,16 +5,19 @@ class LegalService {
     return `/legal-services${path}`;
   }
 
-  getLegalServices() {
-    return http.get(this.endpoint("/"));
+  getLegalServices({ page, limit }) {
+    return http.get(
+      this.endpoint(`?${new URLSearchParams({ page: page + 1, limit })}`)
+    );
   }
 
   createLegalService(data) {
     return http.post(this.endpoint("/"), data);
   }
 
-  updateLegalServiceStatus(id, data) {
-    return http.patch(this.endpoint(`/${id}`), data);
+  updateLegalServiceStatus(data) {
+    const { id, ...rest } = data;
+    return http.patch(this.endpoint(`/${id}`), rest);
   }
 
   getLegalServiceProfile() {

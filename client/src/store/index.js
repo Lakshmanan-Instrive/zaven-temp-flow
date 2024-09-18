@@ -8,7 +8,7 @@ import UserReducer from "./slices/UserSlice";
 const reducer = {
   auth: AuthReducer,
   corporate: CorporateReducer,
-  legalService: LegalServiceReducer,
+  legal: LegalServiceReducer,
   refreshToken: RefreshTokenReducer,
   user: UserReducer,
 };

@@ -2,14 +2,27 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import LegalService from "../../services/LegalService";
 
 const initialState = {
-  legal: null,
+  legal: {
+    legal: [],
+    total: 0,
+    page: 0,
+    limit: 10,
+  },
+  legalProfile: {},
+  legalUsers: {
+    data: [],
+    total: 0,
+    page: 0,
+    limit: 10,
+  },
 };
 
 export const get_legal_call = createAsyncThunk(
   "legal/get_legal",
-  async (data) => {
-    const response = await LegalService.getLegalServices(data);
-    return response.data;
+  async ({ page, limit }) => {
+    console.log("page", page);
+    const response = await LegalService.getLegalServices({ page, limit });
+    return { data: response.data, page, limit };
   }
 );
 
@@ -23,8 +36,8 @@ export const create_legal_call = createAsyncThunk(
 
 export const update_legal_status_call = createAsyncThunk(
   "legal/update_legal_status",
-  async (id, data) => {
-    const response = await LegalService.updateLegalServiceStatus(id, data);
+  async (data) => {
+    const response = await LegalService.updateLegalServiceStatus(data);
     return response.data;
   }
 );
@@ -67,30 +80,64 @@ const legalSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(get_legal_call.fulfilled, (state, action) => {
+        console.log("action.payload", action.payload);
       return {
         ...state,
-        legal: action.payload,
+        legal: {
+          ...state.legal,
+          legal: action.payload.data.detail.data,
+          total: action.payload.data.detail.total,
+          page: action.payload.page,
+          limit: action.payload.limit,
+        },
       };
     });
     builder.addCase(create_legal_call.fulfilled, (state, action) => {
-      return action.payload;
+      return {
+        ...state,
+        legal: [...state.legal, action.payload],
+      };
     });
     builder.addCase(update_legal_status_call.fulfilled, (state, action) => {
-      return action.payload;
+      return {
+        ...state,
+        legal: {
+          ...state.legal,
+          legal: state.legal.legal.map((item) =>
+            item._id === action.payload.detail._id
+              ? action.payload.detail
+              : item
+          ),
+        },
+      };
     });
     builder.addCase(get_legal_profile_call.fulfilled, (state, action) => {
-      return action.payload;
+      return {
+        ...state,
+        legalProfile: action.payload,
+      };
     });
     builder.addCase(get_legal_users_call.fulfilled, (state, action) => {
-      return action.payload;
+      return {
+        ...state,
+        legalUsers: action.payload,
+      };
     });
     builder.addCase(invite_legal_user_call.fulfilled, (state, action) => {
-      return action.payload;
+      return {
+        ...state,
+        legalUsers: [...state.legalUsers, action.payload],
+      };
     });
     builder.addCase(
       update_legal_user_status_call.fulfilled,
       (state, action) => {
-        return action.payload;
+        return {
+          ...state,
+          legalUsers: state.legalUsers.map((item) =>
+            item.id === action.payload.id ? action.payload : item
+          ),
+        };
       }
     );
   },

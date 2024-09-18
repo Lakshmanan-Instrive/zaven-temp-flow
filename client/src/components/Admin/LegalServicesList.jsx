@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   TableContainer,
   Table,
@@ -19,80 +19,39 @@ import CloseIcon from "@mui/icons-material/Close";
 import CheckIcon from "@mui/icons-material/Check";
 import HourglassBottomIcon from "@mui/icons-material/HourglassBottom";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import {
+  get_legal_call,
+  update_legal_status_call,
+} from "../../store/slices/LegalServiceSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 const LegalServicesList = ({ role }) => {
-  const token = localStorage.getItem("token");
-  const [page, setPage] = useState(0);
-  const [limit, setLimit] = useState(10);
-  const [total, setTotal] = useState(0);
+  const dispatch = useDispatch();
+
+  const { legal, page, limit, total } = useSelector((state) => state.legal.legal);
+  console.log("legal", legal, page, limit, total);
   const [openModal, setOpenModal] = useState(false);
   const [selected, setSelected] = useState({});
-  const [legalServices, setLegalServices] = useState([]);
 
+  const legalFetch = useCallback(
+    ({ page, limit }) => {
+      dispatch(get_legal_call({ page, limit }));
+    },
+    [dispatch]
+  );
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_API_ENDPOINT}/legal-services?page=${
-            page + 1
-          }&limit=${limit}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        const data = await response.json();
-        console.log(data.detail.data, "data");
-        setLegalServices(data.detail.data);
-        setTotal(data.detail.total);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchData();
-  }, [page, limit]);
+    legalFetch({ page, limit });
+  }, [legalFetch]);
 
   const approveRejectLegalService = async (id, status) => {
-    console.log(id, status, "id, status");
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_ENDPOINT}/legal-services/${id}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ status }),
-        }
-      );
-      const data = await response.json();
-      console.log(data);
-      if (data.error) {
-        alert(data.error);
-        if (data.error === "Unauthorized") {
-          localStorage.clear();
-          window.location.href = "/login";
-        }
-      } else {
-        const newLegalServices = legalServices.map((legalService) =>
-          legalService._id === id ? { ...legalService, status } : legalService
-        );
-        setLegalServices(newLegalServices);
-      }
-    } catch (error) {
-      console.log(error);
-    }
+    await dispatch(update_legal_status_call({ id, status }));
   };
 
-  const handlePageChange = (event, newPage) => {
+  const handleLegalPageChange = (event, newPage) => {
     setPage(newPage);
   };
 
-  const handleClose = () => {
+  const handleLegalViewClose = () => {
     setOpenModal(false);
   };
 
@@ -112,8 +71,8 @@ const LegalServicesList = ({ role }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {legalServices.length > 0 &&
-              legalServices.map((legal) => (
+            {legal.length > 0 &&
+              legal.map((legal) => (
                 <TableRow key={legal._id}>
                   <TableCell>{legal.companyName}</TableCell>
                   <TableCell>{legal.contactPerson}</TableCell>
@@ -187,14 +146,13 @@ const LegalServicesList = ({ role }) => {
           count={total}
           rowsPerPage={limit}
           page={page}
-          onPageChange={handlePageChange}
+          onPageChange={handleLegalPageChange}
           onRowsPerPageChange={(event) => {
-            setLimit(event.target.value);
-            setPage(0);
+            legalFetch({ page, limit: event.target.value });
           }}
         />
       </TableContainer>
-      <Modal open={openModal} onClose={handleClose} className="h-200">
+      <Modal open={openModal} onClose={handleLegalViewClose} className="h-200">
         <Box className="bg-white p-8 h-2/3 w-1/3 mx-auto mt-20 overflow-y-scroll">
           <Typography variant="h4" className="mb-4 text-center">
             Legal Service
@@ -215,7 +173,7 @@ const LegalServicesList = ({ role }) => {
               variant="contained"
               color="primary"
               type="button"
-              onClick={handleClose}
+              onClick={handleLegalViewClose}
               className="bg-gray-200 text-gray-800 hover:bg-gray-300 ml-2"
             >
               Close
