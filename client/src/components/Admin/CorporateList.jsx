@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   TableContainer,
   Table,
@@ -19,89 +19,42 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import CheckIcon from "@mui/icons-material/Check";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import HourglassBottomIcon from "@mui/icons-material/HourglassBottom";
+import {
+  get_corporate_call,
+  update_corporate_status_call,
+} from "../../store/slices/CorporateSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 const CorporateList = ({ role }) => {
-  const token = localStorage.getItem("token");
-  const [page, setPage] = useState(0);
-  const [limit, setLimit] = useState(10);
-  const [total, setTotal] = useState(0);
-  const [openModal, setOpenModal] = useState(false);
-  const [selected, setSelected] = useState({});
-  const [corporate, setCorporate] = useState([]);
+  const dispatch = useDispatch();
+
+  const { corporate, page, limit, total } = useSelector(
+    (state) => state.corporate
+  );
+  const [openCorporateViewModal, setOpenCorporateViewModal] = useState(false);
+  const [selectedCorporate, setSelectedCorporate] = useState({});
+
+  const corporateFetch = useCallback(
+    ({ page, limit }) => {
+      dispatch(get_corporate_call({ page, limit }));
+    },
+    [dispatch]
+  );
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_API_ENDPOINT}/corporate?page=${
-            page + 1
-          }&limit=${limit}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        const data = await response.json();
-        if (data.error) {
-          alert(data.error);
-          if (data.error === "Unauthorized") {
-            localStorage.clear();
-            window.location.href = "/login";
-          }
-        }
-        console.log(data.detail.data, "data");
-        setCorporate(data.detail.data);
-        setTotal(data.detail.total);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchData();
-  }, [limit, page]);
+    corporateFetch({ page, limit });
+  }, [corporateFetch]);
 
   const approveRejectCorporate = async (id, status) => {
-    console.log(id, status, "id, status");
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_ENDPOINT}/corporate/${id}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ status }),
-        }
-      );
-      const data = await response.json();
-      console.log(data);
-      if (data.error) {
-        alert(data.error);
-        if (data.error === "Unauthorized") {
-          localStorage.clear();
-          window.location.href = "/login";
-        }
-      } else {
-        const newCorporate = corporate.map((corp) =>
-          corp._id === id ? { ...corp, status } : corp
-        );
-        setCorporate(newCorporate);
-      }
-    } catch (error) {
-      console.log(error);
-    }
+    await dispatch(update_corporate_status_call({ id, status }));
   };
 
-  const handlePageChange = (event, newPage) => {
-    setPage(newPage);
+  const handleCorporatePageChange = (event, newPage) => {
+    corporateFetch({ page: newPage, limit });
   };
 
-  const handleClose = () => {
-    setOpenModal(false);
+  const handleCorporateViewClose = () => {
+    setOpenCorporateViewModal(false);
   };
 
   return (
@@ -148,7 +101,11 @@ const CorporateList = ({ role }) => {
                     <Box
                       style={{
                         backgroundColor:
-                          corp.status === 0 ? "yellow" : corp.status === 1 ? "green" : "red",
+                          corp.status === 0
+                            ? "yellow"
+                            : corp.status === 1
+                            ? "green"
+                            : "red",
                         textAlign: "center",
                         padding: "5px",
                         borderRadius: "5px",
@@ -166,8 +123,8 @@ const CorporateList = ({ role }) => {
                         style={{ cursor: "pointer" }}
                         onClick={() => {
                           console.log(corp, "corp");
-                          setOpenModal(true);
-                          setSelected(corp);
+                          setOpenCorporateViewModal(true);
+                          setSelectedCorporate(corp);
                         }}
                       >
                         <Tooltip title="View" placement="top">
@@ -203,20 +160,26 @@ const CorporateList = ({ role }) => {
           count={total}
           rowsPerPage={limit}
           page={page}
-          onPageChange={handlePageChange}
-          onRowsPerPageChange={(event) => setLimit(event.target.value)}
+          onPageChange={handleCorporatePageChange}
+          onRowsPerPageChange={(event) =>
+            corporateFetch({ page: 0, limit: event.target.value })
+          }
         />
       </TableContainer>
-      <Modal open={openModal} onClose={handleClose} className="h-200">
+      <Modal
+        open={openCorporateViewModal}
+        onClose={handleCorporateViewClose}
+        className="h-200"
+      >
         <Box className="bg-white p-8 h-2/3 w-1/3 mx-auto mt-20 overflow-y-scroll">
           <Typography variant="h4" className="mb-4 text-center">
             Legal Service
           </Typography>
-          <div>Company Name: {selected.companyName} </div>
-          <div>Contact Person: {selected.contactPerson} </div>
-          <div>Phone Number: {selected.phoneNumber} </div>
-          <div>Company Address: {selected.companyAddress} </div>
-          <div>Zip Code: {selected.zipCode} </div>
+          <div>Company Name: {selectedCorporate.companyName} </div>
+          <div>Contact Person: {selectedCorporate.contactPerson} </div>
+          <div>Phone Number: {selectedCorporate.phoneNumber} </div>
+          <div>Company Address: {selectedCorporate.companyAddress} </div>
+          <div>Zip Code: {selectedCorporate.zipCode} </div>
           <div
             style={{
               display: "flex",
@@ -228,7 +191,7 @@ const CorporateList = ({ role }) => {
               variant="contained"
               color="primary"
               type="button"
-              onClick={handleClose}
+              onClick={handleCorporateViewClose}
               className="bg-gray-200 text-gray-800 hover:bg-gray-300 ml-2"
             >
               Close

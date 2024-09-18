@@ -1,8 +1,16 @@
 import { configureStore } from "@reduxjs/toolkit";
 import AuthReducer from "./slices/AuthSlice";
+import CorporateReducer from "./slices/CorporateSlice";
+import LegalServiceReducer from "./slices/LegalServiceSlice";
+import RefreshTokenReducer from "./slices/RefreshTokenSlice";
+import UserReducer from "./slices/UserSlice";
 
 const reducer = {
   auth: AuthReducer,
+  corporate: CorporateReducer,
+  legalService: LegalServiceReducer,
+  refreshToken: RefreshTokenReducer,
+  user: UserReducer,
 };
 
 const store = configureStore({

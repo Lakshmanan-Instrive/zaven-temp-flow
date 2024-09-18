@@ -1,19 +1,6 @@
 const service = require("./service");
 const boom = require("@hapi/boom");
-const utilsChecks = require("../../system/utils/checks");
 const cacheInstance = require("../../system/utils/cache_reset_password");
-
-const list = async () => {
-  const getList = await service.list();
-  if (!utilsChecks.isArray(getList) || utilsChecks.isEmptyArray(getList)) {
-    throw boom.notFound("No Legal Service Found");
-  }
-  const result = {
-    message: "User List Fetched",
-    detail: getList,
-  };
-  return result;
-};
 
 const changePassword = async (params, user) => {
   let data = {
@@ -36,6 +23,5 @@ const changePassword = async (params, user) => {
 };
 
 module.exports = {
-  list,
   changePassword,
 };

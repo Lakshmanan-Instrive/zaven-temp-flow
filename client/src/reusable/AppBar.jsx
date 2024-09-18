@@ -13,6 +13,7 @@ import Menu from "@mui/material/Menu";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import ChangePasswordComponent from "./ChangePasswordComponent";
 import { logout_call } from "../store/slices/AuthSlice";
+import { userChangePassword } from "../store/slices/UserSlice";
 import { useDispatch } from "react-redux";
 
 const formStructure = {
@@ -72,24 +73,12 @@ const AppBarComponent = ({ handleDrawerOpen, role }) => {
 
   const onSubmit = async (values) => {
     console.log(values);
-    fetch(`${import.meta.env.VITE_API_ENDPOINT}/user/change-password`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(values),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-        if (data.error) {
-          alert(data.error);
-        } else {
-          alert("Password updated successfully");
-          setOpen(false);
-        }
-      });
+    const response = await dispatch(userChangePassword(values));
+    console.log(response);
+    if (response.payload) {
+      alert("Password updated successfully");
+      setOpen(false);
+    }
   };
 
   return (
