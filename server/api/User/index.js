@@ -77,6 +77,12 @@ userSchema.pre("updateOne", async function (next) {
   next();
 });
 
+userSchema.index({
+  email: "text",
+  firstName: "text",
+  surName: "text",
+});
+
 const Users = dbConn.model("user", userSchema, "users");
 
 module.exports = Users;

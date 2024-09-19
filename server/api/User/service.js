@@ -19,15 +19,31 @@ module.exports = {
       throw boom.badRequest(error);
     }
   },
-  getUserList: async (page, limit, role, roleId) => {
+  getUserList: async (page, limit, role, roleId, search, sort, status) => {
     try {
       const skip = (parseInt(page) - 1) * parseInt(limit);
+      let query = {};
+      let sortQuery = { createdAt: -1 };
+      if (search) {
+        search = new RegExp(search, "i");
+        query = {
+          $text: { $search: search },
+        };
+      }
+      if (status) {
+        query.status = parseInt(status);
+      }
+      if (sort) {
+        sort = JSON.parse(sort);
+        sortQuery = sort;
+      }
       const [users, totalPages] = await Promise.all([
-        User.find({ role, ...roleId })
+        User.find({ role, ...roleId, ...query })
+          .sort(sortQuery)
           .skip(skip)
           .select({ email: 1, firstName: 1, surName: 1, status: 1 })
           .limit(parseInt(limit)),
-        User.countDocuments({ role, ...roleId }),
+        User.countDocuments({ role, ...roleId, ...query }),
       ]);
 
       return { users, totalPages };

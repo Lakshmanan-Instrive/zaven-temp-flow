@@ -38,27 +38,26 @@ const formStructure = {
 const CorporateUserList = () => {
   const dispatch = useDispatch();
 
-  const { corporateUsers, total, page, limit } = useSelector(
-    (state) => state.corporate.corporateUsers
-  );
+  const { corporateUsers, total, page, limit, search, sort, filter } =
+    useSelector((state) => state.corporate.corporateUsers);
 
   const [openModal, setOpenModal] = useState(false);
   const [selected, setSelected] = useState({});
   const [inviteModel, setInviteModel] = useState(false);
 
   const fetchCorporateUsers = useCallback(
-    ({ page, limit }) => {
-      dispatch(get_corporate_users_call({ page, limit }));
+    ({ page, limit, search, sort, filter }) => {
+      dispatch(get_corporate_users_call({ page, limit, search, sort, filter }));
     },
     [dispatch]
   );
 
   useEffect(() => {
-    fetchCorporateUsers({ page, limit });
+    fetchCorporateUsers({ page, limit, search, sort, filter });
   }, [fetchCorporateUsers]);
 
   const handlePageChange = (event, newPage) => {
-    fetchCorporateUsers({ page: newPage, limit });
+    fetchCorporateUsers({ page: newPage, limit, search, sort, filter });
   };
 
   const corporateUserViewModalClose = () => {
@@ -76,16 +75,41 @@ const CorporateUserList = () => {
     if (response.payload) {
       alert("User Invited Successfully");
       corporateInviteClose();
-      fetchCorporateUsers({ page, limit });
+      fetchCorporateUsers({ page, limit, search, sort, filter });
     }
   };
 
   const pageLimitChange = (limit) => {
-    fetchCorporateUsers({ page: 0, limit });
+    fetchCorporateUsers({ page: 0, limit, search, sort, filter });
   };
 
   const acceptOrRejectUser = async (userId, status) => {
     dispatch(update_corporate_user_status_call({ userId, status }));
+  };
+
+  const handleCorpUserSort = (value) => {
+    console.log("Sort Value", value);
+    let sortValue;
+    if (sort && sort[value]) {
+      sortValue = sort[value] === 1 ? { [value]: -1 } : { [value]: 1 };
+    } else {
+      sortValue = { [value]: 1 };
+    }
+    fetchCorporateUsers({ page, limit, search, sort: sortValue, filter });
+  };
+
+  const handleCorpUserSearch = (value) => {
+    fetchCorporateUsers({ page, limit, search: value, sort, filter });
+  };
+
+  const handleCorpUserFilter = (value) => {
+    let filterValue = undefined;
+    if ((value && value !== -1) || value === 0) {
+      filterValue = {
+        status: value,
+      };
+    }
+    fetchCorporateUsers({ page, limit, search, sort, filter: filterValue });
   };
 
   return (
@@ -124,6 +148,12 @@ const CorporateUserList = () => {
           setSelected={setSelected}
           pageLimitChange={pageLimitChange}
           acceptOrRejectUser={acceptOrRejectUser}
+          handleSort={handleCorpUserSort}
+          handleFilter={handleCorpUserFilter}
+          handleSearch={handleCorpUserSearch}
+          search={search}
+          sort={sort}
+          filter={filter}
         />
         <UserInviteComponent
           inviteModel={inviteModel}

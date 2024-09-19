@@ -37,10 +37,20 @@ class LegalService {
     return http.get(this.endpoint("/profile"));
   }
 
-  getLegalServiceUsers({ page, limit }) {
+  getLegalServiceUsers({ page, limit, search, filter, sort }) {
+    if (!search) search = "";
+    if (!filter) filter = "";
+    if (!sort) sort = "";
+    else sort = JSON.stringify(sort);
     return http.get(
       this.endpoint(
-        `/user-list?${new URLSearchParams({ page: page + 1, limit })}`
+        `/user-list?${new URLSearchParams({
+          page: page + 1,
+          limit,
+          search,
+          ...filter,
+          sort,
+        })}`
       )
     );
   }

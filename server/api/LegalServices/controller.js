@@ -143,12 +143,15 @@ const getProfile = async (params) => {
 };
 
 const getUserList = async (params, user) => {
-  const { page, limit } = params;
+  const { page, limit, search, filter, sort } = params;
   const { users, totalPages } = await UserService.getUserList(
     page,
     limit,
     user.role,
-    user.roleId
+    user.roleId,
+    search,
+    sort,
+    filter
   );
   const result = {
     message: "Legal Service List Fetched",

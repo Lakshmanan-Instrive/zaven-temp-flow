@@ -17,6 +17,9 @@ const initialState = {
     total: 0,
     page: 0,
     limit: 10,
+    search: "",
+    filter: "",
+    sort: "",
   },
 };
 
@@ -61,12 +64,21 @@ export const get_legal_profile_call = createAsyncThunk(
 
 export const get_legal_users_call = createAsyncThunk(
   "legal/get_legal_users",
-  async ({ page, limit }) => {
-    const response = await LegalService.getLegalServiceUsers({ page, limit });
+  async ({ page, limit, search, filter, sort }) => {
+    const response = await LegalService.getLegalServiceUsers({
+      page,
+      limit,
+      search,
+      filter,
+      sort,
+    });
     return {
       data: response.data,
       page,
       limit,
+      search,
+      filter,
+      sort,
     };
   }
 );
@@ -141,6 +153,9 @@ const legalSlice = createSlice({
           total: action.payload.data.detail.total,
           page: action.payload.page,
           limit: action.payload.limit,
+          search: action.payload.search,
+          filter: action.payload.filter,
+          sort: action.payload.sort,
         },
       };
     });

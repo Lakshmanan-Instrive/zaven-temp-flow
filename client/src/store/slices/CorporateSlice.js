@@ -7,6 +7,9 @@ const initialState = {
     total: 0,
     page: 0,
     limit: 10,
+    search: "",
+    filter: "",
+    sort: "",
   },
   corporateProfile: {},
   corporateUsers: {
@@ -14,6 +17,9 @@ const initialState = {
     total: 0,
     page: 0,
     limit: 10,
+    search: "",
+    filter: "",
+    sort: "",
   },
 };
 
@@ -57,12 +63,21 @@ export const get_corporate_profile_call = createAsyncThunk(
 
 export const get_corporate_users_call = createAsyncThunk(
   "corporate/get_corporate_users",
-  async ({ page, limit }) => {
-    const response = await CorporateService.getCorporateUsers({ page, limit });
+  async ({ page, limit, search, filter, sort }) => {
+    const response = await CorporateService.getCorporateUsers({
+      page,
+      limit,
+      search,
+      filter,
+      sort,
+    });
     return {
       data: response.data,
       page,
       limit,
+      search,
+      filter,
+      sort,
     };
   }
 );
@@ -139,6 +154,9 @@ const corporateSlice = createSlice({
           total: action.payload.data.detail.total,
           page: action.payload.page,
           limit: action.payload.limit,
+          search: action.payload.search,
+          filter: action.payload.filter,
+          sort: action.payload.sort,
         },
       };
     });

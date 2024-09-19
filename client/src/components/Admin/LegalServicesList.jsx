@@ -207,7 +207,7 @@ const LegalServicesList = ({ role }) => {
                           <VisibilityIcon />
                         </Tooltip>
                       </span>
-                      {legal.status !== 1 && (
+                      {legal.status === 0 && (
                         <Tooltip title="Approve" placement="top">
                           <IconButton
                             onClick={() =>
@@ -218,7 +218,7 @@ const LegalServicesList = ({ role }) => {
                           </IconButton>
                         </Tooltip>
                       )}
-                      {legal.status !== 2 && (
+                      {legal.status === 0 && (
                         <Tooltip title="Reject" placement="top">
                           <IconButton
                             onClick={() =>

@@ -39,7 +39,7 @@ const formStructure = {
 const LegalServiceUserList = () => {
   const dispatch = useDispatch();
 
-  const { legalUsers, total, page, limit } = useSelector(
+  const { legalUsers, total, page, limit, search, sort, filter } = useSelector(
     (state) => state.legal.legalUsers
   );
 
@@ -48,18 +48,18 @@ const LegalServiceUserList = () => {
   const [inviteModel, setInviteModel] = useState(false);
 
   const fetchLegalUsers = useCallback(
-    ({ page, limit }) => {
-      dispatch(get_legal_users_call({ page, limit }));
+    ({ page, limit, search, sort, filter }) => {
+      dispatch(get_legal_users_call({ page, limit, search, sort, filter }));
     },
     [dispatch]
   );
 
   useEffect(() => {
-    fetchLegalUsers({ page, limit });
+    fetchLegalUsers({ page, limit, search, sort, filter });
   }, [fetchLegalUsers]);
 
   const handlePageChange = (event, newPage) => {
-    fetchLegalUsers({ page: newPage, limit });
+    fetchLegalUsers({ page: newPage, limit, search, sort, filter });
   };
 
   const legalViewModalClose = () => {
@@ -82,11 +82,35 @@ const LegalServiceUserList = () => {
   };
 
   const pageLimitChange = (limit) => {
-    fetchLegalUsers({ page: 0, limit });
+    fetchLegalUsers({ page: 0, limit, search, sort, filter });
   };
 
   const acceptOrRejectUser = (userId, status) => {
     dispatch(update_legal_user_status_call({ userId, status }));
+  };
+
+  const handleLegalUserSort = (value) => {
+    let sortValue;
+    if (sort && sort[value]) {
+      sortValue = sort[value] === 1 ? { [value]: -1 } : { [value]: 1 };
+    } else {
+      sortValue = { [value]: 1 };
+    }
+    fetchLegalUsers({ page, limit, search, sort: sortValue, filter });
+  };
+
+  const handleLegalUserSearch = (value) => {
+    fetchLegalUsers({ page, limit, search: value, sort, filter });
+  };
+
+  const handleLegalUserFilter = (value) => {
+    let filterValue = undefined;
+    if ((value && value !== -1) || value === 0) {
+      filterValue = {
+        status: value,
+      };
+    }
+    fetchLegalUsers({ page, limit, search, sort, filter: filterValue });
   };
 
   return (
@@ -125,6 +149,12 @@ const LegalServiceUserList = () => {
           setSelected={setSelected}
           pageLimitChange={pageLimitChange}
           acceptOrRejectUser={acceptOrRejectUser}
+          handleSort={handleLegalUserSort}
+          handleFilter={handleLegalUserFilter}
+          handleSearch={handleLegalUserSearch}
+          search={search}
+          sort={sort}
+          filter={filter}
         />
         <UserInviteComponent
           inviteModel={inviteModel}

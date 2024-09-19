@@ -13,10 +13,13 @@ import {
   Typography,
   Button,
   Tooltip,
+  TableSortLabel,
 } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import FilterBar from "./FilterBar";
+import SearchBar from "./SearchBar";
 
 const UserListComponent = ({
   usersData,
@@ -31,17 +34,66 @@ const UserListComponent = ({
   setSelected,
   handleClose,
   acceptOrRejectUser,
+  handleSort,
+  handleFilter,
+  handleSearch,
+  sort,
+  filter,
+  search,
 }) => {
   return (
     <>
+      <Box
+        width={"100%"}
+        display={"flex"}
+        alignItems={"center"}
+        padding={"10px"}
+        gap={"10px"}
+        justifyContent={"space-between"}
+      >
+        <SearchBar searchQuery={handleSearch} search={search} />
+        <FilterBar filter={filter?.status} changeFilter={handleFilter} />
+      </Box>
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Email</TableCell>
-              <TableCell>First Name</TableCell>
-              <TableCell>Sur Name</TableCell>
-              <TableCell>Status</TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={sort && sort.email ? true : false}
+                  direction={sort && sort.email === 1 ? "asc" : "desc"}
+                  onClick={() => handleSort("email")}
+                >
+                  Email
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={sort && sort.firstName ? true : false}
+                  direction={sort && sort.firstName === 1 ? "asc" : "desc"}
+                  onClick={() => handleSort("firstName")}
+                >
+                  First Name
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={sort && sort.surName ? true : false}
+                  direction={sort && sort.surName === 1 ? "asc" : "desc"}
+                  onClick={() => handleSort("surName")}
+                >
+                  Sur Name
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={sort && sort.status ? true : false}
+                  direction={sort && sort.status === 1 ? "asc" : "desc"}
+                  onClick={() => handleSort("status")}
+                >
+                  Status
+                </TableSortLabel>
+              </TableCell>
               <TableCell>Action</TableCell>
             </TableRow>
           </TableHead>
@@ -84,7 +136,7 @@ const UserListComponent = ({
                         <VisibilityIcon />
                       </Tooltip>
                     </IconButton>
-                    {user.status !== 1 && (
+                    {user.status == 0 && (
                       <Tooltip title="Approve" placement="top">
                         <IconButton
                           onClick={() => acceptOrRejectUser(user._id, 1)}
@@ -93,7 +145,7 @@ const UserListComponent = ({
                         </IconButton>
                       </Tooltip>
                     )}
-                    {user.status !== 2 && (
+                    {user.status == 0 && (
                       <Tooltip title="Reject" placement="top">
                         <IconButton
                           onClick={() => acceptOrRejectUser(user._id, 2)}

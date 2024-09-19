@@ -212,7 +212,7 @@ const CorporateList = ({ role }) => {
                           <VisibilityIcon />
                         </Tooltip>
                       </span>
-                      {corp.status !== 1 && (
+                      {corp.status === 0 && (
                         <Tooltip title="Approve" placement="top">
                           <IconButton
                             onClick={() => approveRejectCorporate(corp._id, 1)}
@@ -221,7 +221,7 @@ const CorporateList = ({ role }) => {
                           </IconButton>
                         </Tooltip>
                       )}
-                      {corp.status !== 2 && (
+                      {corp.status === 0 && (
                         <Tooltip title="Reject" placement="top">
                           <IconButton
                             onClick={() => approveRejectCorporate(corp._id, 2)}
