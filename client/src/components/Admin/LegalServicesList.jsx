@@ -4,6 +4,7 @@ import {
   Table,
   TableHead,
   TableBody,
+  TableSortLabel,
   TableRow,
   TableCell,
   TablePagination,
@@ -72,6 +73,16 @@ const LegalServicesList = ({ role }) => {
     legalFetch({ page, limit, search, filter: filterValue, sort });
   };
 
+  const handleLegalSortChange = (value) => {
+    let sortValue;
+    if (sort[value]) {
+      sortValue = sort[value] === 1 ? { [value]: -1 } : { [value]: 1 };
+    } else {
+      sortValue = { [value]: 1 };
+    }
+    legalFetch({ page, limit, search, filter, sort: sortValue });
+  };
+
   return (
     <>
       <Box
@@ -92,13 +103,65 @@ const LegalServicesList = ({ role }) => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Company Name</TableCell>
-              <TableCell>Contact Person</TableCell>
-              <TableCell>Phone Number</TableCell>
-              <TableCell>Company Address</TableCell>
-              <TableCell>Zip Code</TableCell>
-              <TableCell>Status</TableCell>
-              {!role && <TableCell>Action</TableCell>}
+              <TableCell style={{ textTransform: "uppercase" }}>
+                <TableSortLabel
+                  active={sort["companyName"]}
+                  direction={sort["companyName"] === 1 ? "asc" : "desc"}
+                  onClick={() => handleLegalSortChange("companyName")}
+                >
+                  Company Name
+                </TableSortLabel>
+              </TableCell>
+              <TableCell style={{ textTransform: "uppercase" }}>
+                <TableSortLabel
+                  active={sort["contactPerson"]}
+                  direction={sort["contactPerson"] === 1 ? "asc" : "desc"}
+                  onClick={() => handleLegalSortChange("contactPerson")}
+                >
+                  Contact Person
+                </TableSortLabel>
+              </TableCell>
+              <TableCell style={{ textTransform: "uppercase" }}>
+                <TableSortLabel
+                  active={sort["phoneNumber"]}
+                  direction={sort["phoneNumber"] === 1 ? "asc" : "desc"}
+                  onClick={() => handleLegalSortChange("phoneNumber")}
+                >
+                  Phone Number
+                </TableSortLabel>
+              </TableCell>
+              <TableCell style={{ textTransform: "uppercase" }}>
+                <TableSortLabel
+                  active={sort["companyAddress"]}
+                  direction={sort["companyAddress"] === 1 ? "asc" : "desc"}
+                  onClick={() => handleLegalSortChange("companyAddress")}
+                >
+                  Company Address
+                </TableSortLabel>
+              </TableCell>
+              <TableCell style={{ textTransform: "uppercase" }}>
+                <TableSortLabel
+                  active={sort["zipCode"]}
+                  direction={sort["zipCode"] === 1 ? "asc" : "desc"}
+                  onClick={() => handleLegalSortChange("zipCode")}
+                >
+                  Zip Code
+                </TableSortLabel>
+              </TableCell>
+              <TableCell style={{ textTransform: "uppercase" }}>
+                <TableSortLabel
+                  active={sort["status"]}
+                  direction={sort["status"] === 1 ? "asc" : "desc"}
+                  onClick={() => handleLegalSortChange("status")}
+                >
+                  Status
+                </TableSortLabel>
+              </TableCell>
+              {!role && (
+                <TableCell style={{ textTransform: "uppercase" }}>
+                  Action
+                </TableCell>
+              )}
             </TableRow>
           </TableHead>
           <TableBody>

@@ -14,6 +14,7 @@ import {
   IconButton,
   Box,
   Tooltip,
+  TableSortLabel,
 } from "@mui/material";
 
 import CloseIcon from "@mui/icons-material/Close";
@@ -73,6 +74,16 @@ const CorporateList = ({ role }) => {
     corporateFetch({ page, limit, search, filter: filterValue, sort });
   };
 
+  const handleCorporateSortChange = (value) => {
+    let sortValue;
+    if (sort && sort[value]) {
+      sortValue = sort[value] === 1 ? { [value]: -1 } : { [value]: 1 };
+    } else {
+      sortValue = { [value]: 1 };
+    }
+    corporateFetch({ page, limit, search, filter, sort: sortValue });
+  };
+
   return (
     <>
       <Box
@@ -92,24 +103,64 @@ const CorporateList = ({ role }) => {
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
-            <TableRow style={{ backgroundColor: "rgb(251, 251, 252)" }}>
+            <TableRow>
               <TableCell style={{ textTransform: "uppercase" }}>
-                Company Name
+                <TableSortLabel
+                  active={sort && sort["companyName"]}
+                  direction={sort && sort["companyName"] === 1 ? "asc" : "desc"}
+                  onClick={() => handleCorporateSortChange("companyName")}
+                >
+                  Company Name
+                </TableSortLabel>
               </TableCell>
               <TableCell style={{ textTransform: "uppercase" }}>
-                Contact Person
+                <TableSortLabel
+                  active={sort && sort["contactPerson"]}
+                  direction={
+                    sort && sort["contactPerson"] === 1 ? "asc" : "desc"
+                  }
+                  onClick={() => handleCorporateSortChange("contactPerson")}
+                >
+                  Contact Person
+                </TableSortLabel>
               </TableCell>
               <TableCell style={{ textTransform: "uppercase" }}>
-                Phone Number
+                <TableSortLabel
+                  active={sort && sort["phoneNumber"]}
+                  direction={sort && sort["phoneNumber"] === 1 ? "asc" : "desc"}
+                  onClick={() => handleCorporateSortChange("phoneNumber")}
+                >
+                  Phone Number
+                </TableSortLabel>
               </TableCell>
               <TableCell style={{ textTransform: "uppercase" }}>
-                Company Address
+                <TableSortLabel
+                  active={sort && sort["companyAddress"]}
+                  direction={
+                    sort && sort["companyAddress"] === 1 ? "asc" : "desc"
+                  }
+                  onClick={() => handleCorporateSortChange("companyAddress")}
+                >
+                  Company Address
+                </TableSortLabel>
               </TableCell>
               <TableCell style={{ textTransform: "uppercase" }}>
-                Zip Code
+                <TableSortLabel
+                  active={sort && sort["zipCode"]}
+                  direction={sort && sort["zipCode"] === 1 ? "asc" : "desc"}
+                  onClick={() => handleCorporateSortChange("zipCode")}
+                >
+                  Zip Code
+                </TableSortLabel>
               </TableCell>
               <TableCell style={{ textTransform: "uppercase" }}>
-                Status
+                <TableSortLabel
+                  active={sort && sort["status"]}
+                  direction={sort && sort["status"] === 1 ? "asc" : "desc"}
+                  onClick={() => handleCorporateSortChange("status")}
+                >
+                  Status
+                </TableSortLabel>
               </TableCell>
               {!role && (
                 <TableCell style={{ textTransform: "uppercase" }}>
@@ -209,7 +260,7 @@ const CorporateList = ({ role }) => {
       >
         <Box className="bg-white p-8 h-2/3 w-1/3 mx-auto mt-20 overflow-y-scroll">
           <Typography variant="h4" className="mb-4 text-center">
-            Legal Service
+            Corporate
           </Typography>
           <div>Company Name: {selectedCorporate.companyName} </div>
           <div>Contact Person: {selectedCorporate.contactPerson} </div>

@@ -9,6 +9,7 @@ class LegalService {
     if (!search) search = "";
     if (!filter) filter = "";
     if (!sort) sort = "";
+    else sort = JSON.stringify(sort);
     console.log("filter", filter);
     return http.get(
       this.endpoint(

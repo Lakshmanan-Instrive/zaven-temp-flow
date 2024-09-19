@@ -9,6 +9,7 @@ class CorporateService {
     if (!search) search = "";
     if (!filter) filter = "";
     if (!sort) sort = "";
+    else sort = JSON.stringify(sort);
     return http.get(
       this.endpoint(
         `?${new URLSearchParams({
