@@ -45,7 +45,7 @@ module.exports = {
   updateStatus: async (id, status) => {
     try {
       return await Legal_Service.findOneAndUpdate(
-        { _id: id, status: { $ne: status } },
+        { _id: id, status: 0 },
         { status },
         { new: true }
       );

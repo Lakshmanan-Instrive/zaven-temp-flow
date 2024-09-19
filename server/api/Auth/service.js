@@ -1,7 +1,9 @@
 const boom = require("@hapi/boom");
 const User = require("../User/index");
 const bcrypt = require("bcrypt");
-const { generateUniqueId } = require("../../system/utils/access_code_password_change");
+const {
+  generateUniqueId,
+} = require("../../system/utils/access_code_password_change");
 
 module.exports = {
   verifyAccess: async (params) => {
@@ -92,11 +94,13 @@ module.exports = {
 
   statusUpdate: async (id, update, type, userId) => {
     try {
-      let match = {};
+      let match = {
+        status: 0,
+      };
       if (type === "CP") {
-        match = { corporateId: id };
+        match = { ...match, corporateId: id };
       } else {
-        match = { legalServiceId: id };
+        match = { ...match, legalServiceId: id };
       }
       if (userId) {
         match = { ...match, _id: userId };
