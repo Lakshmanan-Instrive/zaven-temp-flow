@@ -7,7 +7,7 @@ const legalServiceSchema = new Schema(
       type: String,
     },
     status: {
-      type: Number, // 0 = inactive, 1 = active, 2 = rejected
+      type: Number, // 0 = pending, 1 = active, 2 = inactive
       default: 0,
       required: true,
     },
@@ -35,6 +35,14 @@ const legalServiceSchema = new Schema(
     timestamps: true,
   }
 );
+
+legalServiceSchema.index({
+  companyName: "text",
+  contactPerson: "text",
+  companyAddress: "text",
+  zipCode: "text",
+  phoneNumber: "text",
+});
 
 const Legal_Service = dbConn.model(
   "legal_service",

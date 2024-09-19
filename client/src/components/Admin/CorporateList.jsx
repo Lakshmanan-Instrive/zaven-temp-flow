@@ -24,25 +24,27 @@ import {
   update_corporate_status_call,
 } from "../../store/slices/CorporateSlice";
 import { useDispatch, useSelector } from "react-redux";
+import SearchBar from "../../reusable/SearchBar";
+import FilterBar from "../../reusable/FilterBar";
 
 const CorporateList = ({ role }) => {
   const dispatch = useDispatch();
 
-  const { corporate, page, limit, total } = useSelector(
+  const { corporate, page, limit, total, search, filter, sort } = useSelector(
     (state) => state.corporate.corporate
   );
   const [openCorporateViewModal, setOpenCorporateViewModal] = useState(false);
   const [selectedCorporate, setSelectedCorporate] = useState({});
 
   const corporateFetch = useCallback(
-    ({ page, limit }) => {
-      dispatch(get_corporate_call({ page, limit }));
+    ({ page, limit, search, filter, sort }) => {
+      dispatch(get_corporate_call({ page, limit, search, filter, sort }));
     },
     [dispatch]
   );
 
   useEffect(() => {
-    corporateFetch({ page, limit });
+    corporateFetch({ page, limit, search, filter, sort });
   }, [corporateFetch]);
 
   const approveRejectCorporate = async (id, status) => {
@@ -50,15 +52,43 @@ const CorporateList = ({ role }) => {
   };
 
   const handleCorporatePageChange = (event, newPage) => {
-    corporateFetch({ page: newPage, limit });
+    corporateFetch({ page: newPage, limit, search, filter, sort });
   };
 
   const handleCorporateViewClose = () => {
     setOpenCorporateViewModal(false);
   };
 
+  const handleCorporateSearchChange = (value) => {
+    corporateFetch({ page, limit, search: value, filter, sort });
+  };
+
+  const handleCorporateFilterChange = (value) => {
+    let filterValue = undefined;
+    if ((value && value !== -1) || value === 0) {
+      filterValue = {
+        status: value,
+      };
+    }
+    corporateFetch({ page, limit, search, filter: filterValue, sort });
+  };
+
   return (
     <>
+      <Box
+        width={"100%"}
+        display={"flex"}
+        alignItems={"center"}
+        padding={"10px"}
+        gap={"10px"}
+        justifyContent={"space-between"}
+      >
+        <SearchBar searchQuery={handleCorporateSearchChange} search={search} />
+        <FilterBar
+          filter={filter?.status}
+          changeFilter={handleCorporateFilterChange}
+        />
+      </Box>
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
@@ -162,7 +192,13 @@ const CorporateList = ({ role }) => {
           page={page}
           onPageChange={handleCorporatePageChange}
           onRowsPerPageChange={(event) =>
-            corporateFetch({ page: 0, limit: event.target.value })
+            corporateFetch({
+              page: 0,
+              limit: event.target.value,
+              search,
+              filter,
+              sort,
+            })
           }
         />
       </TableContainer>

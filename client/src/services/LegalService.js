@@ -5,9 +5,21 @@ class LegalService {
     return `/legal-services${path}`;
   }
 
-  getLegalServices({ page, limit }) {
+  getLegalServices({ page, limit, search, filter, sort }) {
+    if (!search) search = "";
+    if (!filter) filter = "";
+    if (!sort) sort = "";
+    console.log("filter", filter);
     return http.get(
-      this.endpoint(`?${new URLSearchParams({ page: page + 1, limit })}`)
+      this.endpoint(
+        `?${new URLSearchParams({
+          page: page + 1,
+          limit,
+          search,
+          ...filter,
+          sort,
+        })}`
+      )
     );
   }
 

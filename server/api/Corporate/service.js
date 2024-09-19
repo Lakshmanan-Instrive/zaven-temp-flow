@@ -11,14 +11,29 @@ module.exports = {
       throw boom.badRequest(error);
     }
   },
-  list: async (page = 1, limit = 10) => {
+  list: async (page = 1, limit = 10, search, sort, status) => {
     try {
-      console.log(page, limit, "page, limit");
       const skip = (parseInt(page) - 1) * parseInt(limit);
-      const corporates = await Corporate.find()
+      let query = {};
+      let sortQuery = { createdAt: -1 };
+      if (search) {
+        search = new RegExp(search, "i");
+        query = {
+          $text: { $search: search },
+        };
+      }
+      if (status) {
+        query.status = parseInt(status);
+      }
+      if (sort) {
+        sort = JSON.parse(sort);
+        sortQuery = sort;
+      }
+      const corporates = await Corporate.find(query)
+        .sort(sortQuery)
         .skip(skip)
         .limit(parseInt(limit));
-      const totalPages = await Corporate.countDocuments();
+      const totalPages = await Corporate.countDocuments(query);
 
       return { corporates, totalPages };
     } catch (error) {

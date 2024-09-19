@@ -17,18 +17,19 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import CheckIcon from "@mui/icons-material/Check";
-import HourglassBottomIcon from "@mui/icons-material/HourglassBottom";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import {
   get_legal_call,
   update_legal_status_call,
 } from "../../store/slices/LegalServiceSlice";
 import { useDispatch, useSelector } from "react-redux";
+import SearchBar from "../../reusable/SearchBar";
+import FilterBar from "../../reusable/FilterBar";
 
 const LegalServicesList = ({ role }) => {
   const dispatch = useDispatch();
 
-  const { legal, page, limit, total } = useSelector(
+  const { legal, page, limit, total, search, filter, sort } = useSelector(
     (state) => state.legal.legal
   );
   console.log("legal", legal, page, limit, total);
@@ -36,14 +37,14 @@ const LegalServicesList = ({ role }) => {
   const [selected, setSelected] = useState({});
 
   const legalFetch = useCallback(
-    ({ page, limit }) => {
-      dispatch(get_legal_call({ page, limit }));
+    ({ page, limit, search, filter, sort }) => {
+      dispatch(get_legal_call({ page, limit, search, filter, sort }));
     },
     [dispatch]
   );
 
   useEffect(() => {
-    legalFetch({ page, limit });
+    legalFetch({ page, limit, search, filter, sort });
   }, [legalFetch]);
 
   const approveRejectLegalService = async (id, status) => {
@@ -51,15 +52,42 @@ const LegalServicesList = ({ role }) => {
   };
 
   const handleLegalPageChange = (event, newPage) => {
-    setPage(newPage);
+    legalFetch({ page: newPage, limit, search, filter, sort });
   };
 
   const handleLegalViewClose = () => {
     setOpenModal(false);
   };
+  const handleLegalSearchChange = (value) => {
+    legalFetch({ page, limit, search: value, filter, sort });
+  };
+
+  const handleLegalFilterChange = (value) => {
+    let filterValue = undefined;
+    if ((value && value !== -1) || value === 0) {
+      filterValue = {
+        status: value,
+      };
+    }
+    legalFetch({ page, limit, search, filter: filterValue, sort });
+  };
 
   return (
     <>
+      <Box
+        width={"100%"}
+        display={"flex"}
+        alignItems={"center"}
+        padding={"10px"}
+        gap={"10px"}
+        justifyContent={"space-between"}
+      >
+        <SearchBar searchQuery={handleLegalSearchChange} search={search} />
+        <FilterBar
+          filter={filter?.status}
+          changeFilter={handleLegalFilterChange}
+        />
+      </Box>
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
@@ -151,7 +179,13 @@ const LegalServicesList = ({ role }) => {
           page={page}
           onPageChange={handleLegalPageChange}
           onRowsPerPageChange={(event) => {
-            legalFetch({ page, limit: event.target.value });
+            legalFetch({
+              page,
+              limit: event.target.value,
+              search,
+              filter,
+              sort,
+            });
           }}
         />
       </TableContainer>

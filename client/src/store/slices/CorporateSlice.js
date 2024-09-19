@@ -19,9 +19,15 @@ const initialState = {
 
 export const get_corporate_call = createAsyncThunk(
   "corporate/get_corporate",
-  async ({ page, limit }) => {
-    const response = await CorporateService.getCorporate({ page, limit });
-    return { data: response.data, page, limit };
+  async ({ page, limit, search, filter, sort }) => {
+    const response = await CorporateService.getCorporate({
+      page,
+      limit,
+      search,
+      filter,
+      sort,
+    });
+    return { data: response.data, page, limit, search, filter, sort };
   }
 );
 
@@ -92,6 +98,9 @@ const corporateSlice = createSlice({
           total: action.payload.data.detail.total,
           page: action.payload.page,
           limit: action.payload.limit,
+          search: action.payload.search,
+          filter: action.payload.filter,
+          sort: action.payload.sort,
         },
       };
     });

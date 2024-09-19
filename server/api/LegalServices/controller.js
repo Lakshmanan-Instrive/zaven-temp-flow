@@ -44,8 +44,14 @@ const create = async (params) => {
 
 const list = async (params) => {
   console.log(params, "params");
-  const { page, limit } = params;
-  const { legalServices, totalPages } = await service.list(page, limit);
+  const { page, limit, search, sort, status } = params;
+  const { legalServices, totalPages } = await service.list(
+    page,
+    limit,
+    search,
+    sort,
+    status
+  );
   const result = {
     message: "Legal Service List Fetched",
     detail: { data: legalServices, total: totalPages },

@@ -5,9 +5,20 @@ class CorporateService {
     return `/corporate${path}`;
   }
 
-  getCorporate({ page, limit }) {
+  getCorporate({ page, limit, search, filter, sort }) {
+    if (!search) search = "";
+    if (!filter) filter = "";
+    if (!sort) sort = "";
     return http.get(
-      this.endpoint(`?${new URLSearchParams({ page: page + 1, limit })}`)
+      this.endpoint(
+        `?${new URLSearchParams({
+          page: page + 1,
+          limit,
+          search,
+          ...filter,
+          sort,
+        })}`
+      )
     );
   }
 

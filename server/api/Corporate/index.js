@@ -1,5 +1,5 @@
 const { Schema } = require("mongoose");
-const {dbConn} = require("../../system/db/mongo");
+const { dbConn } = require("../../system/db/mongo");
 
 const corporateSchema = new Schema(
   {
@@ -37,6 +37,14 @@ const corporateSchema = new Schema(
     timestamps: true,
   }
 );
+
+corporateSchema.index({
+  companyName: "text",
+  contactPerson: "text",
+  companyAddress: "text",
+  zipCode: "text",
+  phoneNumber: "text",
+});
 
 const Corporate = dbConn.model("corporate", corporateSchema, "corporates");
 

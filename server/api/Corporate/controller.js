@@ -43,8 +43,14 @@ const createCorporate = async (params) => {
 
 const list = async (params) => {
   console.log(params, "params");
-  const { page, limit } = params;
-  const { corporates, totalPages } = await service.list(page, limit);
+  const { page, limit, search, sort, status } = params;
+  const { corporates, totalPages } = await service.list(
+    page,
+    limit,
+    search,
+    sort,
+    status
+  );
   const result = {
     message: "Corporate List Fetched",
     detail: { data: corporates, total: totalPages },

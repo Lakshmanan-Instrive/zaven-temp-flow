@@ -22,7 +22,6 @@ module.exports = {
   getUserList: async (page, limit, role, roleId) => {
     try {
       const skip = (parseInt(page) - 1) * parseInt(limit);
-      console.log(skip, "skip");
       const [users, totalPages] = await Promise.all([
         User.find({ role, ...roleId })
           .skip(skip)
