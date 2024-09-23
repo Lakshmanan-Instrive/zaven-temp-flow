@@ -256,30 +256,104 @@ const CorporateList = ({ role }) => {
       <Modal
         open={openCorporateViewModal}
         onClose={handleCorporateViewClose}
-        className="h-200"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
       >
-        <Box className="bg-white p-8 h-2/3 w-1/3 mx-auto mt-20 overflow-y-scroll">
-          <Typography variant="h4" className="mb-4 text-center">
-            Corporate
+        <Box
+          style={{
+            backgroundColor: "white",
+            padding: "32px",
+            maxHeight: "calc(100% - 96px)",
+            overflowY: "auto",
+            width: "33%",
+            borderRadius: "8px",
+            boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+          }}
+        >
+          <Typography
+            variant="h5"
+            style={{
+              marginBottom: "16px",
+              textAlign: "center",
+              fontWeight: "bold",
+            }}
+          >
+            Corporate Details
           </Typography>
-          <div>Company Name: {selectedCorporate.companyName} </div>
-          <div>Contact Person: {selectedCorporate.contactPerson} </div>
-          <div>Phone Number: {selectedCorporate.phoneNumber} </div>
-          <div>Company Address: {selectedCorporate.companyAddress} </div>
-          <div>Zip Code: {selectedCorporate.zipCode} </div>
           <div
             style={{
               display: "flex",
+              marginBottom: "8px",
               alignItems: "center",
+            }}
+          >
+            <strong style={{ minWidth: "150px" }}>Company Name:</strong>
+            <span>{selectedCorporate.companyName}</span>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              marginBottom: "8px",
+              alignItems: "center",
+            }}
+          >
+            <strong style={{ minWidth: "150px" }}>Contact Person:</strong>
+            <span>{selectedCorporate.contactPerson}</span>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              marginBottom: "8px",
+              alignItems: "center",
+            }}
+          >
+            <strong style={{ minWidth: "150px" }}>Phone Number:</strong>
+            <span>{selectedCorporate.phoneNumber}</span>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              marginBottom: "8px",
+              alignItems: "center",
+            }}
+          >
+            <strong style={{ minWidth: "150px" }}>Company Address:</strong>
+            <span>{selectedCorporate.companyAddress}</span>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              marginBottom: "8px",
+              alignItems: "center",
+            }}
+          >
+            <strong style={{ minWidth: "150px" }}>Zip Code:</strong>
+            <span>{selectedCorporate.zipCode}</span>
+          </div>
+
+          <div
+            style={{
+              marginTop: "20px",
+              display: "flex",
               justifyContent: "center",
             }}
           >
             <Button
               variant="contained"
-              color="primary"
-              type="button"
               onClick={handleCorporateViewClose}
-              className="bg-gray-200 text-gray-800 hover:bg-gray-300 ml-2"
+              style={{
+                backgroundColor: "#1976d2",
+                color: "white",
+                textTransform: "none",
+                padding: "6px 16px",
+                boxShadow: "none",
+                "&:hover": {
+                  backgroundColor: "#115293",
+                },
+              }}
             >
               Close
             </Button>

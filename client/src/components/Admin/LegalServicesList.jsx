@@ -252,29 +252,107 @@ const LegalServicesList = ({ role }) => {
           }}
         />
       </TableContainer>
-      <Modal open={openModal} onClose={handleLegalViewClose} className="h-200">
-        <Box className="bg-white p-8 h-2/3 w-1/3 mx-auto mt-20 overflow-y-scroll">
-          <Typography variant="h4" className="mb-4 text-center">
-            Legal Service
+      <Modal
+        open={openModal}
+        onClose={handleLegalViewClose}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Box
+          style={{
+            backgroundColor: "white",
+            padding: "32px",
+            maxHeight: "calc(100% - 96px)",
+            overflowY: "auto",
+            width: "33%",
+            borderRadius: "8px",
+            boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+          }}
+        >
+          <Typography
+            variant="h5"
+            style={{
+              marginBottom: "16px",
+              textAlign: "center",
+              fontWeight: "bold",
+            }}
+          >
+            Legal Service Details
           </Typography>
-          <div>Company Name: {selected.companyName} </div>
-          <div>Contact Person: {selected.contactPerson} </div>
-          <div>Phone Number: {selected.phoneNumber} </div>
-          <div>Company Address: {selected.companyAddress} </div>
-          <div>Zip Code: {selected.zipCode} </div>
           <div
             style={{
               display: "flex",
+              marginBottom: "8px",
               alignItems: "center",
+            }}
+          >
+            <strong style={{ minWidth: "150px" }}>Company Name:</strong>
+            <span>{selected.companyName}</span>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              marginBottom: "8px",
+              alignItems: "center",
+            }}
+          >
+            <strong style={{ minWidth: "150px" }}>Contact Person:</strong>
+            <span>{selected.contactPerson}</span>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              marginBottom: "8px",
+              alignItems: "center",
+            }}
+          >
+            <strong style={{ minWidth: "150px" }}>Phone Number:</strong>
+            <span>{selected.phoneNumber}</span>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              marginBottom: "8px",
+              alignItems: "center",
+            }}
+          >
+            <strong style={{ minWidth: "150px" }}>Company Address:</strong>
+            <span>{selected.companyAddress}</span>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              marginBottom: "8px",
+              alignItems: "center",
+            }}
+          >
+            <strong style={{ minWidth: "150px" }}>Zip Code:</strong>
+            <span>{selected.zipCode}</span>
+          </div>
+
+          <div
+            style={{
+              marginTop: "20px",
+              display: "flex",
               justifyContent: "center",
             }}
           >
             <Button
               variant="contained"
-              color="primary"
-              type="button"
               onClick={handleLegalViewClose}
-              className="bg-gray-200 text-gray-800 hover:bg-gray-300 ml-2"
+              style={{
+                backgroundColor: "#1976d2",
+                color: "white",
+                textTransform: "none",
+                padding: "6px 16px",
+                boxShadow: "none",
+                "&:hover": {
+                  backgroundColor: "#115293",
+                },
+              }}
             >
               Close
             </Button>
