@@ -107,7 +107,7 @@ const login = async (params, res) => {
         generatedDate: Date.now(),
         uniqueId: generateUniqueId(),
       },
-      expiresIn: 2,
+      expiresIn: 24,
     });
 
     await refreshService.create({
@@ -117,10 +117,11 @@ const login = async (params, res) => {
       expiresAt: new Date(Date.now() + 2 * 60 * 60 * 1000), // 2 hours from now
     });
 
-    res.cookie("refreshToken", refreshToken, {
+    await res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "none",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     const session = {

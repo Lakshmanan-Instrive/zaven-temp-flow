@@ -30,6 +30,7 @@ const AuthProvider = ({ children }) => {
         scheduleTokenRefresh(decodedUser.exp * 1000, decodedUser.data._id);
         localStorage.setItem("token", newToken);
         localStorage.setItem("user", JSON.stringify(decodedUser.data));
+        localStorage.setItem("expiryAt", decodedUser.exp * 1000);
       } catch (error) {
         console.error("Token error:", error.message);
         setToken(null);
@@ -55,9 +56,8 @@ const AuthProvider = ({ children }) => {
   };
 
   const scheduleTokenRefresh = (expiryAt, userId) => {
-    console.log("Scheduling token refresh...", expiryAt, Date.now());
     const expiresIn = expiryAt - Date.now();
-    const refreshTime = expiresIn - 600000;
+    const refreshTime = expiresIn - 1000 * 60 * 5; // 5 minutes before expiry
     if (refreshTime > 0) {
       const id = setTimeout(() => {
         refreshTokenCall(userId);
@@ -69,9 +69,8 @@ const AuthProvider = ({ children }) => {
   };
 
   const refreshTokenCall = async (userId) => {
-    console.log("Refreshing token...", user);
     const response = await dispatch(refresh_token_call({ userId }));
-    setToken(response.payload.token);
+    if (response.payload.accessToken) setToken(response.payload.accessToken);
   };
 
   useEffect(() => {

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { refresh_token_call } from "./store/slices/RefreshTokenSlice";
 
 // Create an instance of Axios
 const axiosInstance = axios.create({
@@ -10,6 +11,13 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
+    //intercept the request and check if the token is expired
+    const expiryAt = localStorage.getItem("expiryAt");
+    if (token && expiryAt) {
+      if (expiryAt < Date.now() - 30000) {
+        refresh_token_call(localStorage.getItem("user")._id);
+      }
+    }
     // You can modify the request config here (e.g., add headers, authentication tokens, etc.)
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;

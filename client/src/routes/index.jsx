@@ -9,10 +9,13 @@ import { fallbackRender } from "../utils/ErrorBoundary";
 import NotFound from "../pages/Common/NotFound";
 import { menuConfig } from "../utils/MenuConfig";
 import MenuComponent from "../reusable/Menu";
+import { useIdle } from "../utils/IdleTimeout";
+import { useNetwork } from "../utils/NetworkDetector";
 
 const Routes = () => {
+  const { isIdle } = useIdle();
+  const { isDisconnected } = useNetwork();
   const { token, user } = useAuth();
-  console.log(token, user, "token");
 
   // Define public routes accessible to all users
   const routesForPublic = [
@@ -77,8 +80,16 @@ const Routes = () => {
       }}
       onError={logErrorToService}
     >
-      {user?.role && <MenuComponent role={user.role} />}
-      <RouterProvider router={router}></RouterProvider>
+      {isIdle ? (
+        <div>Idle</div>
+      ) : isDisconnected ? (
+        <div>Your Internet Connection Lost</div>
+      ) : (
+        <>
+          {user?.role && <MenuComponent role={user.role} />}
+          <RouterProvider router={router}></RouterProvider>
+        </>
+      )}
     </ErrorBoundary>
   );
 };
