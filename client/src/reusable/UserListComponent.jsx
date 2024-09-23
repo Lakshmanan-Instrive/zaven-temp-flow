@@ -278,32 +278,3 @@ const UserListComponent = ({
 };
 
 export default UserListComponent;
-<Modal open={openModal} onClose={handleLegalViewClose} className="h-200">
-  <Box className="bg-white p-8 h-2/3 w-1/3 mx-auto mt-20 overflow-y-scroll">
-    <Typography variant="h4" className="mb-4 text-center">
-      Legal Service
-    </Typography>
-    <div>Company Name: {selected.companyName} </div>
-    <div>Contact Person: {selected.contactPerson} </div>
-    <div>Phone Number: {selected.phoneNumber} </div>
-    <div>Company Address: {selected.companyAddress} </div>
-    <div>Zip Code: {selected.zipCode} </div>
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <Button
-        variant="contained"
-        color="primary"
-        type="button"
-        onClick={handleLegalViewClose}
-        className="bg-gray-200 text-gray-800 hover:bg-gray-300 ml-2"
-      >
-        Close
-      </Button>
-    </div>
-  </Box>
-</Modal>;
