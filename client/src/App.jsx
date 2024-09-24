@@ -4,10 +4,15 @@ import { IdleProvider } from "./utils/IdleTimeout";
 import { NetworkDetectorProvider } from "./utils/NetworkDetector";
 
 function App() {
+  const onLogout = async () => {
+    localStorage.clear();
+    window.location.href = "/login";
+  };
+
   return (
     <AuthProvider>
       <IdleProvider>
-        <NetworkDetectorProvider>
+        <NetworkDetectorProvider onLogout={onLogout}>
           <Routes />
         </NetworkDetectorProvider>
       </IdleProvider>

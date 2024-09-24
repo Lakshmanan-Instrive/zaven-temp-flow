@@ -14,8 +14,14 @@ import { useNetwork } from "../utils/NetworkDetector";
 
 const Routes = () => {
   // const { isIdle } = useIdle();
-  const { isDisconnected } = useNetwork();
+  const { isDisconnected, timeLeft } = useNetwork();
   const { token, user } = useAuth();
+
+  const formatTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${minutes}:${secs < 10 ? `0${secs}` : secs}`;
+  };
 
   // Define public routes accessible to all users
   const routesForPublic = [
@@ -81,7 +87,14 @@ const Routes = () => {
       onError={logErrorToService}
     >
       {isDisconnected ? (
-        <div>Your Internet Connection Lost</div>
+        <div>
+          <p>You are offline!</p>
+          {timeLeft !== null && (
+            <p>
+              You will be logged out in: <strong>{formatTime(timeLeft)}</strong>
+            </p>
+          )}
+        </div>
       ) : (
         <>
           {user?.role && <MenuComponent role={user.role} />}
