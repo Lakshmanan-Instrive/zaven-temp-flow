@@ -9,11 +9,11 @@ import { fallbackRender } from "../utils/ErrorBoundary";
 import NotFound from "../pages/Common/NotFound";
 import { menuConfig } from "../utils/MenuConfig";
 import MenuComponent from "../reusable/Menu";
-import { useIdle } from "../utils/IdleTimeout";
+// import { useIdle } from "../utils/IdleTimeout";
 import { useNetwork } from "../utils/NetworkDetector";
 
 const Routes = () => {
-  const { isIdle } = useIdle();
+  // const { isIdle } = useIdle();
   const { isDisconnected } = useNetwork();
   const { token, user } = useAuth();
 
@@ -80,9 +80,7 @@ const Routes = () => {
       }}
       onError={logErrorToService}
     >
-      {isIdle ? (
-        <div>Idle</div>
-      ) : isDisconnected ? (
+      {isDisconnected ? (
         <div>Your Internet Connection Lost</div>
       ) : (
         <>
