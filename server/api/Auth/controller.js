@@ -1,5 +1,6 @@
 const boom = require("@hapi/boom");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 const service = require("./service");
 const refreshService = require("../RefreshToken/service");
 const { createBlockList } = require("../BlockList/service");
@@ -70,7 +71,18 @@ const changePassword = async (params) => {
 const login = async (params, res) => {
   const result = {};
   const { email, password } = params;
-  const userData = await service.login({ email, password });
+  const userData = await service.login(email);
+  console.log(userData, "userData");
+  if (!userData) {
+    throw boom.notFound("Invalid Email or Password, If valid please wait for the approval");
+  }
+
+  const isMatch = await bcrypt.compare(password, userData.password);
+
+  if (!isMatch) {
+    throw boom.notFound("Invalid Email or Password");
+  }
+
   if (userData) {
     let roleId = {};
     if (userData.role == "CP") {
@@ -131,7 +143,7 @@ const login = async (params, res) => {
     };
     result.session = session;
   } else {
-    throw boom.unauthorized("Invalid email or password");
+    throw boom.notFound("Invalid email or password");
   }
   return result;
 };

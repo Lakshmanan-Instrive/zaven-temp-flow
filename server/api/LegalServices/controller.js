@@ -4,12 +4,8 @@ const AuthService = require("../Auth/service");
 const UserService = require("../User/service");
 const { ObjectId } = require("mongoose").Types;
 const sendEmail = require("../../system/utils/send_email");
-const {
-  createPasswordChangeToken,
-} = require("../../system/utils/access_code_password_change");
-const {
-  generateUniqueId,
-} = require("../../system/utils/access_code_password_change");
+const { createPasswordChangeToken } = require("../../system/utils/access_code_password_change");
+const { generateUniqueId } = require("../../system/utils/access_code_password_change");
 
 const create = async (params) => {
   console.log(params);
@@ -45,13 +41,7 @@ const create = async (params) => {
 const list = async (params) => {
   console.log(params, "params");
   const { page, limit, search, sort, status } = params;
-  const { legalServices, totalPages } = await service.list(
-    page,
-    limit,
-    search,
-    sort,
-    status
-  );
+  const { legalServices, totalPages } = await service.list(page, limit, search, sort, status);
   const result = {
     message: "Legal Service List Fetched",
     detail: { data: legalServices, total: totalPages },
@@ -66,18 +56,11 @@ const updateStatus = async (id, params) => {
     throw boom.conflict("Legal Service Already in the Same Status");
   }
   if (result._id) {
-    const updateUser = await AuthService.statusUpdate(
-      result._id,
-      { status: params.status },
-      "LS"
-    );
+    const updateUser = await AuthService.statusUpdate(result._id, { status: params.status }, "LS");
 
     if (updateUser.status === 1) {
       const { accessCode, email, firstName, surName } = updateUser;
-      const setPasswordLink = await createPasswordChangeToken(
-        email,
-        accessCode
-      );
+      const setPasswordLink = await createPasswordChangeToken(email, accessCode);
       await sendEmail({
         email,
         subject: "Password Change Request",
@@ -198,10 +181,9 @@ const userStatus = async (params, user) => {
   console.log(params);
   const { status, userId } = params;
   const result = await AuthService.statusUpdate(
-    user.roleId.legalServiceId,
-    { status },
-    "LS",
-    new ObjectId(userId)
+    { legalServiceId: user.roleId.legalServiceId, _id: userId },
+
+    { status }
   );
   if (!result) {
     throw boom.notFound("User not found");

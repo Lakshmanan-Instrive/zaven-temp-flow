@@ -23,8 +23,7 @@ const createCorporate = async (params) => {
   if (!createUser) {
     throw boom.badRequest();
   }
-  const { companyName, contactPerson, phoneNumber, companyAddress, zipCode } =
-    params;
+  const { companyName, contactPerson, phoneNumber, companyAddress, zipCode } = params;
   const createdCompany = await service.createCompany({
     companyName,
     contactPerson,
@@ -32,7 +31,7 @@ const createCorporate = async (params) => {
     companyAddress,
     zipCode,
     primaryUserId: createUser._id,
-  });
+  }); 
   await AuthService.attachCompany({
     userId: createUser._id,
     corporateId: createdCompany._id,
@@ -44,13 +43,7 @@ const createCorporate = async (params) => {
 const list = async (params) => {
   console.log(params, "params");
   const { page, limit, search, sort, status } = params;
-  const { corporates, totalPages } = await service.list(
-    page,
-    limit,
-    search,
-    sort,
-    status
-  );
+  const { corporates, totalPages } = await service.list(page, limit, search, sort, status);
   const result = {
     message: "Corporate List Fetched",
     detail: { data: corporates, total: totalPages },
@@ -66,17 +59,16 @@ const updateStatus = async (id, params) => {
   }
   if (result._id) {
     let updateUser = await AuthService.statusUpdate(
-      result._id,
-      { status: params.status, accessCode: generateUniqueId() },
-      "CP"
+      { corporateId: result._id, status: 0 },
+      {
+        status: params.status,
+        accessCode: generateUniqueId(),
+      }
     );
 
     if (updateUser.status === 1) {
       let { accessCode, email, firstName, surName } = updateUser;
-      const setPasswordLink = await createPasswordChangeToken(
-        email,
-        accessCode
-      );
+      const setPasswordLink = await createPasswordChangeToken(email, accessCode);
       await sendEmail({
         email: email,
         subject: "Password Change Request",
