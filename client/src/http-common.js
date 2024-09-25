@@ -11,6 +11,11 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
+
+    if (!navigator.onLine) {
+      console.log("No internet connection");
+      return Promise.reject(new Error("No internet connection"));
+    }
     //intercept the request and check if the token is expired
     const expiryAt = localStorage.getItem("expiryAt");
     if (token && expiryAt) {
@@ -18,6 +23,7 @@ axiosInstance.interceptors.request.use(
         refresh_token_call(localStorage.getItem("user")._id);
       }
     }
+
     // You can modify the request config here (e.g., add headers, authentication tokens, etc.)
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;

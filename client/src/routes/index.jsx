@@ -10,11 +10,11 @@ import NotFound from "../pages/Common/NotFound";
 import { menuConfig } from "../utils/MenuConfig";
 import MenuComponent from "../reusable/Menu";
 // import { useIdle } from "../utils/IdleTimeout";
-import { useNetwork } from "../utils/NetworkDetector";
+// import { useNetwork } from "../utils/NetworkDetector";
 
 const Routes = () => {
   // const { isIdle } = useIdle();
-  const { isDisconnected, timeLeft } = useNetwork();
+  // const { isDisconnected, timeLeft } = useNetwork();
   const { token, user } = useAuth();
 
   const formatTime = (seconds) => {
@@ -86,7 +86,7 @@ const Routes = () => {
       }}
       onError={logErrorToService}
     >
-      {isDisconnected ? (
+      {/* {isDisconnected ? (
         <div>
           <p>You are offline!</p>
           {timeLeft !== null && (
@@ -95,12 +95,12 @@ const Routes = () => {
             </p>
           )}
         </div>
-      ) : (
-        <>
-          {user?.role && <MenuComponent role={user.role} />}
-          <RouterProvider router={router}></RouterProvider>
-        </>
-      )}
+      ) : ( */}
+      <>
+        {user?.role && <MenuComponent role={user.role} />}
+        <RouterProvider router={router}></RouterProvider>
+      </>
+      {/* )} */}
     </ErrorBoundary>
   );
 };
